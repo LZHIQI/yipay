@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="image_color">#bebebe</color>
+    <color name="fail_color">#bebebe</color>
+    <color name="transparent50">#80000000</color>
+    <color name="transparent60">#99000000</color>
+    <color name="transparent75">#BF000000</color>
+    <color name="translucentColor">#4c000000</color>
+    <color name="white">#ffffff</color>
+</resources>
