@@ -1,17 +1,13 @@
 package com.mican.myapplication;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.service.notification.NotificationListenerService;
@@ -19,9 +15,10 @@ import android.service.notification.StatusBarNotification;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.mican.myapplication.event.ServiceEvent;
 import com.mican.myapplication.util.LogUtils;
-import com.mican.myapplication.util.NotificationUtils;
-import com.mican.myapplication.util.Utils;
+import com.mican.myapplication.util.ToastUtils;
+import com.mican.myapplication.util.rx.RxBus;
 
 import androidx.core.app.NotificationCompat;
 
@@ -37,29 +34,44 @@ import androidx.core.app.NotificationCompat;
  */
 public class MyNotificationService extends NotificationListenerService {
     private static final String TAG = "MyNotificationService";
-    private final static int NOTIFICATION_ID = android.os.Process.myPid();
-    private MyHandler handler = new MyHandler(Looper.getMainLooper());
+    private MyHandler handler;
     private CharSequence nMessage;
     private String data;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         data = intent.getStringExtra("data");
-        Log.e("NotificationListener","data");
         setForeground();
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
+    }
+
+    public MyHandler getHandler() {
+        if(handler==null){
+            handler= new MyHandler(Looper.getMainLooper());
+        }
+        return handler;
     }
 
     private void setForeground() {
-        NotificationUtils.notify("notificationPay", 1, builder -> {
-            builder.setSmallIcon(R.mipmap.ic_launcher)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("yipay",
+                    "yipay", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager service = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            service.createNotificationChannel(channel);
+         }
+            Notification notification =new NotificationCompat.Builder(this,"yipay")
                     .setContentTitle("易支付")
                     .setContentText("")
-                    .setAutoCancel(false);
-            startForeground(1, builder.build());
-        });
+                    .setAutoCancel(false)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .build();
+            startForeground(1,notification);
     }
-
-
+    /*
+    *     notificationPkg：           com.eg.android.AlipayGphone
+    notificationTitle:          你已成功收款0.01元
+    notificationText:           立即查看今日收款金额>>
+    *
+    * */
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
@@ -82,16 +94,13 @@ public class MyNotificationService extends NotificationListenerService {
                 stringBuffer.append("\nnotificationTitle:          "+notificationTitle);
                 stringBuffer.append("\nnotificationText:           "+notificationText);
                 Log.e("NotificationListener",stringBuffer.toString());
-               /* Message obtain = Message.obtain();
+            if("com.eg.android.AlipayGphone".equals(notificationPkg)&&
+                    "com.eg.android.AlipayGphone.DEFAULT_GROUP".equals(sbn.getNotification().getGroup())){
+                Message obtain = Message.obtain();
                 obtain.obj = nMessage;
-                mHandler.sendMessage(obtain);
-                init();
-                if (datanMessage.contains(data)) {
-                    Message message = handler.obtainMessage();
-                    message.what = 1;
-                    handler.sendMessage(message);
-                    writeData(sdf.format(new Date(System.currentTimeMillis())) + ":" + nMessage);
-                }*/
+                obtain.what = 1;
+                getHandler().sendMessage(obtain);
+              }
             }
         } catch (Exception e) {
 
@@ -101,21 +110,6 @@ public class MyNotificationService extends NotificationListenerService {
 
     }
 
-
-    Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            while (true)
-            {
-                Log.e(TAG, "" + System.currentTimeMillis());
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    };
 
 
     class MyHandler extends Handler {
@@ -128,7 +122,7 @@ public class MyNotificationService extends NotificationListenerService {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-//                    Toast.makeText(MyService.this,"Bingo",Toast.LENGTH_SHORT).show();
+                    ToastUtils.showShort(msg.obj.toString());
             }
         }
 
@@ -137,7 +131,10 @@ public class MyNotificationService extends NotificationListenerService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LogUtils.e("onDestroy");
-
+        RxBus.getInstance().post(new ServiceEvent());
     }
+
+
+
+
 }

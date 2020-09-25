@@ -38,7 +38,7 @@
     <string name="collapse">收起</string>
     <string name="unfold">展开</string>
     <string name="identify_code_reload">重新获取(%1s)</string>
-    <string name="identify_code_reloading" ><u>重新获取</u></string>
+    <string name="identify_code_reloading"><u>重新获取</u></string>
     <string name="empty_network_error">网络错误，点击重试</string>
     <string name="no_data">暂无数据</string>
     <string name="call_phone_permission">需要获取相关权限</string>

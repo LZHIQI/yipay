@@ -16,4 +16,74 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="AppTheme.NoStatusBar">
+        <!-- Customize your theme here. -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:windowTranslucentStatus">false</item> <!--//windowTranslucentStatus,如果为true，状态栏就会变成半透明的-->
+        <!--windowTranslucentStatus、windowTranslucentNavigation，都可以触发LAYOUT_FULLSCREEN 、LAYOUT_STABLE
+        android windowTranslucentNavigation-->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.Splash" >
+        <!-- Customize your theme here. -->
+        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:windowFullscreen">true</item>
+        <!--windowTranslucentStatus、windowTranslucentNavigation，都可以触发LAYOUT_FULLSCREEN 、LAYOUT_STABLE
+        android windowTranslucentNavigation-->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.NoStatusBar.Dark">
+        <!-- Customize your theme here. -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="android:windowTranslucentStatus">false</item> <!--//windowTranslucentStatus,如果为true，状态栏就会变成半透明的-->
+        <!--windowTranslucentStatus、windowTranslucentNavigation，都可以触发LAYOUT_FULLSCREEN 、LAYOUT_STABLE
+        android windowTranslucentNavigation-->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.NoStatusBar.TranslucentNav">
+        <!-- Customize your theme here. -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowTranslucentStatus">false</item> <!--//windowTranslucentStatus,如果为true，状态栏就会变成半透明的-->
+        <!--windowTranslucentStatus、windowTranslucentNavigation，都可以触发LAYOUT_FULLSCREEN 、LAYOUT_STABLE
+        android windowTranslucentNavigation-->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+
+    <style name="Picture.Theme.Translucent" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/transparent</item> <!-- 背景色透明度 -->
+        <item name="android:windowNoTitle">true</item><!-- 无标题 -->
+        <item name="android:windowIsTranslucent">true</item><!-- 半透明,设置为false无透明效果 -->
+    </style>
+
+    <style name="AppTheme.NoStatusBar.Transparent">
+        <!-- Customize your theme here. -->
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:statusBarColor">@color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item><!--模糊-->
+        <item name="android:windowTranslucentStatus">true</item>
+        <!--windowTranslucentStatus、windowTranslucentNavigation，都可以触发LAYOUT_FULLSCREEN 、LAYOUT_STABLE
+        android windowTranslucentNavigation-->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:backgroundDimAmount">0.2</item>
+        <item name="android:windowIsTranslucent">true</item>
+
+
+    </style>
+
+    <color name="transparent">#00000000</color>
 </resources>
