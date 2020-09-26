@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorPrimary">#2878FF</color>
+    <color name="colorPrimaryDark">#2878FF</color>
+    <color name="colorAccent">#2878FF</color>
     <color name="image_color">#bebebe</color>
     <color name="fail_color">#bebebe</color>
+    <color name="white75">#BFffffff</color>
+    <color name="white90">#E6ffffff</color>
     <color name="transparent50">#80000000</color>
     <color name="transparent60">#99000000</color>
     <color name="transparent75">#BF000000</color>
     <color name="translucentColor">#4c000000</color>
     <color name="white">#ffffff</color>
+    <color name="tx666">#666666</color>
+    <color name="tx333">#333333</color>
+    <color name="btn_normal_60">#992878FF</color>
+    <color name="btn_normal">#2878FF</color>
+    <color name="text_color_1a">#1a1a1a</color>
+    <color name="line_bg_color">#F2F4F5</color>
+    <color name="text_color_1a_80">#991A1A1A</color>
+    <color name="def_content_color">#F2F2F2</color>
+    <color name="tx999">#999999</color>
 </resources>

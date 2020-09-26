@@ -24,12 +24,12 @@ public class UserManager{
      }
 
     companion object{
-        private var kv:MMKV = MMKV.defaultMMKV()
+         var kv:MMKV = MMKV.defaultMMKV()
         fun isLogin():Boolean{
             return   !getUser()?.id.isNullOrBlank()
         }
        public fun setUser(user: User?){
-            kv.decodeParcelable("user",User::class.java,user)
+            kv.encode("user",user)
         }
        public fun getUser():User?{
          return  kv.decodeParcelable("user",User::class.java)
