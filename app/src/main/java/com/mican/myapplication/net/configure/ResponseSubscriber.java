@@ -32,10 +32,10 @@ public abstract class ResponseSubscriber<T> extends DisposableObserver<Response<
 
     @Override
     public void onNext(Response<T> tResponse) {
-        if(tResponse.getResult()==1){
+        if(tResponse.getResult()){
             onSuccess(tResponse.getData());
         }else {
-            onError(new CoreApiException(tResponse.getResult(), tResponse.getMessage()));
+            onError(new CoreApiException(2, tResponse.getMessage()));
         }
     }
 

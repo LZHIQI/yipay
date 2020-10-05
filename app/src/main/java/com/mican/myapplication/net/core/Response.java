@@ -11,16 +11,16 @@ package com.mican.myapplication.net.core;
  * @class describe
  */
 public  class Response<T > {
-    private int result;//200
+    private boolean success;//200
     private String message;//success
     private T data;
 
-    public int getResult() {
-        return result;
+    public boolean getResult() {
+        return success;
     }
 
-    public void setResult(int result) {
-        this.result = result;
+    public void setResult(boolean result) {
+        this.success = result;
     }
 
     public String getMessage() {

@@ -50,23 +50,23 @@ public class RxHelper {
     public static <T> ObservableTransformer<Response<T>, T> rxSchedulerObservable() {
         return upstream -> upstream.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).flatMap(tResponse -> {
-                    int result = tResponse.getResult();
-                    if (result == 1) {
+                    boolean result = tResponse.getResult();
+                    if (result) {
                         return Observable.create((ObservableOnSubscribe<T>) emitter -> {
                             try {
                                 if (tResponse.getData() == null) {
-                                    emitter.onError(new CoreApiException(result, ""));
+                                    emitter.onError(new CoreApiException(1, ""));
                                 } else {
                                     emitter.onNext(tResponse.getData());
                                 }
                                 emitter.onComplete();
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                emitter.onError(new CoreApiException(result, ""));
+                                emitter.onError(new CoreApiException(1, ""));
                             }
                         });
                     } else {
-                        return Observable.error(new CoreApiException(result, tResponse.getMessage()));
+                        return Observable.error(new CoreApiException(2, tResponse.getMessage()));
                     }
                 });
     }
