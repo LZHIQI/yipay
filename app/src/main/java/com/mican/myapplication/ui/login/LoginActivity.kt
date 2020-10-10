@@ -56,10 +56,13 @@ class LoginActivity : BaseActivity<UserContractImp>(),UserContract.View {
                     ToastUtils.showShort(message)
                 }
                 override fun getSuccess(o: Any?) {
-                    loading.visibility = View.GONE
-                    val intent= Intent(getThis(), MainActivity::class.java)
-                    ActivityUtils.startActivity(getThis(), intent)
-                    ActivityUtils.finishActivity(LoginActivity::class.java)
+                    if(o is User){
+                        UserManager.setUser(o)
+                        loading.visibility = View.GONE
+                        val intent= Intent(getThis(), MainActivity::class.java)
+                        ActivityUtils.startActivity(getThis(), intent)
+                        ActivityUtils.finishActivity(LoginActivity::class.java)
+                    }
                 }
             })
 

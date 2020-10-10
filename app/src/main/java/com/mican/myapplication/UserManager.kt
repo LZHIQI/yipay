@@ -40,22 +40,40 @@ public class UserManager{
 
 public class User() : Parcelable {
 
-    var mobile:String?=null
+    var username:String?=null
     var id:String?=null
+    var password:String?=null
+    var token:String?=null
+    var parentId:String?=null
+    var status:String?=null
+    var createdAt:String?=null
+    var updatedAt:String?=null
 
     constructor(parcel: Parcel) : this() {
-        mobile = parcel.readString()
+        username = parcel.readString()
         id = parcel.readString()
+        password = parcel.readString()
+        token = parcel.readString()
+        parentId = parcel.readString()
+        status = parcel.readString()
+        createdAt = parcel.readString()
+        updatedAt = parcel.readString()
     }
-
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(mobile)
+        parcel.writeString(username)
         parcel.writeString(id)
+        parcel.writeString(password)
+        parcel.writeString(token)
+        parcel.writeString(parentId)
+        parcel.writeString(status)
+        parcel.writeString(createdAt)
+        parcel.writeString(updatedAt)
     }
 
     override fun describeContents(): Int {
         return 0
     }
+
 
     companion object CREATOR : Parcelable.Creator<User> {
         override fun createFromParcel(parcel: Parcel): User {
@@ -66,6 +84,8 @@ public class User() : Parcelable {
             return arrayOfNulls(size)
         }
     }
+
+
 
 
 }

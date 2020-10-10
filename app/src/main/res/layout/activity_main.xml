@@ -31,6 +31,7 @@
                   android:layout_marginEnd="@dimen/dp_12"
                   app:layout_constraintEnd_toEndOf="parent"
                   android:textSize="@dimen/sp_14"
+                  android:id="@+id/to_vip"
                   android:paddingTop="@dimen/dp_3"
                   android:paddingBottom="@dimen/dp_3"
                   android:paddingStart="@dimen/dp_12"
@@ -61,6 +62,7 @@
                   android:paddingTop="@dimen/dp_3"
                   android:paddingBottom="@dimen/dp_3"
                   android:paddingStart="@dimen/dp_12"
+                  android:id="@+id/tv_cz"
                   android:paddingEnd="@dimen/dp_12"
                   android:text="立即充值"
                   android:background="@drawable/btn_select_def"
@@ -92,7 +94,7 @@
                   android:gravity="center"
                   android:id="@+id/appid_content"
                   android:singleLine="true"
-                  android:text="sssssssssssssssssssss"
+                  android:text=""
                   app:layout_constraintStart_toStartOf="parent"
                   app:layout_constraintEnd_toEndOf="parent"
                   android:layout_marginTop="@dimen/dp_12"
@@ -137,7 +139,7 @@
                   android:gravity="center"
                   android:singleLine="true"
                   android:id="@+id/content_app_secret"
-                  android:text="sssssssssssssssssssss"
+                  android:text=""
                   app:layout_constraintStart_toStartOf="parent"
                   app:layout_constraintEnd_toEndOf="parent"
                   android:layout_marginTop="@dimen/dp_12"
@@ -487,6 +489,18 @@
               app:layout_constraintTop_toTopOf="parent"
               app:layout_constraintWidth_percent="0.8" />
 
+          <ProgressBar
+              android:id="@+id/loading"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:visibility="gone"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toTopOf="parent"
+              app:layout_constraintVertical_bias="0.3"
+           />
       </androidx.constraintlayout.widget.ConstraintLayout>
   </androidx.core.widget.NestedScrollView>
 

@@ -12,4 +12,6 @@ package com.mican.myapplication.api.req;
 public class QueryReq {
     public String    orderId;
     public String id;
+
+    public String Authorization;
 }

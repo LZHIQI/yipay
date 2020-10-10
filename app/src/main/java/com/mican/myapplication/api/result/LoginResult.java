@@ -9,7 +9,7 @@ package com.mican.myapplication.api.result;
  * @chang
  * @class describe
  */
-public class Login {
+public class LoginResult {
 
 
     /**

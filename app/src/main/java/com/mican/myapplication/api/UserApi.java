@@ -1,8 +1,9 @@
 package com.mican.myapplication.api;
 
+import com.mican.myapplication.User;
 import com.mican.myapplication.api.req.PayCallReq;
 import com.mican.myapplication.api.req.QueryReq;
-import com.mican.myapplication.api.result.Login;
+import com.mican.myapplication.api.result.LoginResult;
 import com.mican.myapplication.api.req.Register;
 import com.mican.myapplication.api.result.MerchantStatus;
 import com.mican.myapplication.api.result.PayCallResult;
@@ -40,7 +41,7 @@ public  interface UserApi {
      * 登录
      */
     @POST("/api/user/login")
-    Observable<Response<Login>> login(@Body Register register);
+    Observable<Response<User>> login(@Body Register register);
 
 
     /**

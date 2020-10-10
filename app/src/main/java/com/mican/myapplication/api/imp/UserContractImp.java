@@ -1,11 +1,12 @@
 package com.mican.myapplication.api.imp;
 
+import com.mican.myapplication.User;
 import com.mican.myapplication.api.UserApi;
 import com.mican.myapplication.api.UserContract;
 import com.mican.myapplication.api.req.PayCallReq;
 import com.mican.myapplication.api.req.QueryReq;
 import com.mican.myapplication.api.req.Register;
-import com.mican.myapplication.api.result.Login;
+import com.mican.myapplication.api.result.LoginResult;
 import com.mican.myapplication.api.result.MerchantStatus;
 import com.mican.myapplication.api.result.PayCallResult;
 import com.mican.myapplication.api.result.QueryOrder;
@@ -50,9 +51,9 @@ public class UserContractImp extends UserContract.Presenter {
     @Override
     public void login(Register register, UserContract.View view) {
         mRxManager.add(ApiService.createApi(UserApi.class).login(register)
-                .compose(RxHelper.rxSchedulerObservable()).subscribeWith(new ResponseDisposable<Login>(mContext,true) {
+                .compose(RxHelper.rxSchedulerObservable()).subscribeWith(new ResponseDisposable<User>(mContext,true) {
                     @Override
-                    protected void onSuccess(Login response) {
+                    protected void onSuccess(User response) {
                         view.getSuccess(response);
                     }
                     @Override

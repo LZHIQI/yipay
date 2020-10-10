@@ -10,6 +10,12 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -19,23 +25,35 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.mican.myapplication.api.UserContract;
+import com.mican.myapplication.api.imp.UserContractImp;
+import com.mican.myapplication.api.req.QueryReq;
+import com.mican.myapplication.api.result.UserDetail;
 import com.mican.myapplication.databinding.ActivityMainBinding;
 import com.mican.myapplication.event.ServiceEvent;
+import com.mican.myapplication.ui.login.LoginActivity;
+import com.mican.myapplication.util.ActivityUtils;
 import com.mican.myapplication.util.BarUtils;
+import com.mican.myapplication.util.GsonUtils;
+import com.mican.myapplication.util.JsonUtils;
 import com.mican.myapplication.util.LogUtils;
 import com.mican.myapplication.util.RxManager;
+import com.mican.myapplication.util.ToastUtils;
+import com.mican.myapplication.util.Utils;
 import com.mican.myapplication.util.rx.RxBus;
 import com.mican.myapplication.util.rx.RxResponseDisposable;
 import com.mican.myapplication.view.custom.CustomCallBack;
 import com.mican.myapplication.view.custom.CustomDialog;
 import com.mican.myapplication.view.custom.DialogShow;
 
-public class MainActivity extends BaseActivity {
+import java.util.concurrent.TimeUnit;
+
+public class MainActivity extends BaseActivity<UserContractImp> implements UserContract.View {
     RxManager rxManager= new RxManager();
     ActivityMainBinding inflate;
-    CustomDialog customDialog;
-
-
+    CustomDialog customDialog,vipDialog,remainingDialog;
+    Boolean isLoading=true;
+    UserDetail userDetail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,21 +61,146 @@ public class MainActivity extends BaseActivity {
         inflate= ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(inflate.getRoot());
         BarUtils.setStatusBarLightMode(this, true);
-        rxManager.add(
-                RxBus.getInstance().toObservable(ServiceEvent.class).subscribeWith(
-               new RxResponseDisposable<ServiceEvent>() {
-                   @Override
-                   public void rxSuccess(ServiceEvent serviceEvent) {
-                       startService();
-                   }
-               }
-            ));
+
+        refVipInfo();
+    }
+
+    private void request() {
+        if(UserManager.Companion.isLogin()){
+            if(isLoading){
+                inflate.loading.setVisibility(View.VISIBLE);
+            }
+            User user = UserManager.Companion.getUser();
+            QueryReq queryReq=new QueryReq();
+            queryReq.id=user.getId();
+            queryReq.Authorization=user.getToken();
+                    mPresenter.detail(queryReq, new UserContract.View() {
+                        @Override
+                        public void getError(String message) {
+                            ToastUtils.showShort(message);
+                            goneView();
+                        }
+
+                        @Override
+                        public void getSuccess(Object o) {
+                            /*inflate.openParent.setVisibility(View.VISIBLE);*/
+                            if(o instanceof UserDetail){
+                                userDetail= (UserDetail) o;
+                                renderVip();
+                            }
+                            goneView();
+                        }
+                    });
+        }else {
+            Intent intent= new Intent(this, LoginActivity.class);
+            ActivityUtils.startActivity(getThis(), intent);
+        }
 
     }
-   private void toOpen(){
+
+    private void renderVip() {
+      if(userDetail.memberStatus==0){ //未开通
+          customDialog   = DialogShow.showDefDialog(getThis(), new CustomCallBack() {
+                      @Override
+                      public void right() {
+                          renderNoVip();
+                      }
+
+                      @Override
+                      public void left() {
+
+
+                      }
+                  }, "您还未开通会员服务，收款功能无法使用，快去开通会员服务，马上收款！",
+                  "温馨提示",
+                  "暂不开通",
+                  "前往开通",
+                  false,
+                  false);
+
+
+      }else if(userDetail.memberStatus==1){  //已开通
+
+
+          inflate.tvVipStatus.setText("会员状态：基础版365天");
+          if(userDetail.memberDay<10){
+              remainingDialog   = DialogShow.showDefDialog(getThis(), new CustomCallBack() {
+                          @Override
+                          public void right() {
+
+                          }
+
+                          @Override
+                          public void left() {
+
+                          }
+                      }, "您的会员服务即将到期，请立即续费。避免收款服务受到影响",
+                      "温馨提示",
+                      "暂不续费",
+                      "前往续费",
+                      false,
+                      false);
+          }else {
+
+          }
+
+
+      }
+    }
+
+    private void renderNoVip() {
+        inflate.tvVipStatus.setText("会员状态：未开通会员");
+        inflate.toVip.setText("立即开通");
+        inflate.toVip.setOnClickListener(view -> { //立即开通
+
+       });
+        inflate.tvUserBalance.setText(String.format("账户余额：%s元",userDetail.balance));
+        inflate.tvCz.setOnClickListener(view -> { //立即充值
+
+        });
+        inflate.appidContent.setText(userDetail.appid);
+        inflate.contentAppSecret.setText(userDetail.appsecret);
+
+    }
+
+
+    public  void refVipInfo(){
+        getRxBus().clear();
+        getRxBus().add(
+                RxBus.getInstance().toObservable(ServiceEvent.class).subscribeWith(
+                        new RxResponseDisposable<ServiceEvent>() {
+                            @Override
+                            public void rxSuccess(ServiceEvent serviceEvent) {
+                                startService();
+                            }
+                        }
+                ));
+        Flowable.intervalRange(0, 300, 0, 1, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(aLong -> inflate.timeUpDate.setText(String.format("会员信息更新倒计时%s秒", (300 - aLong) )))
+                .doOnComplete(() -> {
+
+                })
+                .subscribe();
+
+    }
+
+    private void goneView() {
+        if( inflate.loading.getVisibility()==View.VISIBLE){
+            inflate.loading.setVisibility(View.GONE);
+            isLoading=false;
+        }
+    }
+
+    private void toOpen(){
        Intent intent_s = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
        startActivity(intent_s);
    }
+
+    @Override
+    protected UserContractImp setPresenter() {
+        return new UserContractImp();
+    }
 
     private boolean isEnabled() {
         String pkgName = getPackageName();
@@ -90,7 +233,7 @@ public class MainActivity extends BaseActivity {
         if(!isEnabled()){
             inflate.btnOpen.setVisibility(View.VISIBLE);
             inflate.openParent.setVisibility(View.GONE);
-            customDialog   = DialogShow.showDefDialog(getThis(), new CustomCallBack() {
+            vipDialog   = DialogShow.showDefDialog(getThis(), new CustomCallBack() {
                         @Override
                         public void right() {
                             toOpen();
@@ -108,7 +251,7 @@ public class MainActivity extends BaseActivity {
                     false);
         }else {
             inflate.btnOpen.setVisibility(View.GONE);
-            inflate.openParent.setVisibility(View.VISIBLE);
+            request();
         }
         inflate.btnOpen.setOnClickListener(view -> {
             if(!isEnabled()){
@@ -161,5 +304,15 @@ public class MainActivity extends BaseActivity {
         ClipData mClipData = ClipData.newPlainText("Label", "这里是要复制的文字");
 // 将ClipData内容放到系统剪贴板里。
         cm.setPrimaryClip(mClipData);
+    }
+
+    @Override
+    public void getError(String message) {
+
+    }
+
+    @Override
+    public void getSuccess(Object o) {
+
     }
 }

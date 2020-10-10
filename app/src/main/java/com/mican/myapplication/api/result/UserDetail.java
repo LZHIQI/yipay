@@ -31,8 +31,8 @@ public class UserDetail {
     public String id;
     public String username;
     public String password;
-    public Object token;
-    public Object parentId;
+    public String token;
+    public String parentId;
     public int isPay;
     public int memberStatus;
     public int memberDay;
