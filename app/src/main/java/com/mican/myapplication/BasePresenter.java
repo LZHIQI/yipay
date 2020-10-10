@@ -18,7 +18,11 @@ package com.mican.myapplication;
 
 
 
+import android.app.Activity;
+
 import com.mican.myapplication.util.RxManager;
+
+
 
 import io.reactivex.disposables.Disposable;
 
@@ -44,4 +48,6 @@ public abstract class BasePresenter<T extends BaseView> {
      public  void  add(Disposable disposable){
          if(mRxManager!=null) mRxManager.add(disposable);
      }
+
+
 }

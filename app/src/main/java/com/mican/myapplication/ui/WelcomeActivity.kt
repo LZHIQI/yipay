@@ -3,6 +3,7 @@ package com.mican.myapplication.ui
 import android.content.Intent
 import android.os.Bundle
 import com.mican.myapplication.BaseActivity
+import com.mican.myapplication.BasePresenter
 import com.mican.myapplication.MainActivity
 import com.mican.myapplication.UserManager
 import com.mican.myapplication.databinding.ActivityWelcomeBinding
@@ -13,7 +14,7 @@ import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 
-class WelcomeActivity : BaseActivity() {
+class WelcomeActivity : BaseActivity<BasePresenter<*>>() {
     lateinit var inflate:ActivityWelcomeBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

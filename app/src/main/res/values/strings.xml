@@ -13,7 +13,7 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">请输入手机号/邮箱</string>
     <string name="prompt_password">请输入密码</string>
-    <string name="action_sign_in">登录/注册</string>
+    <string name="action_sign_in">注册</string>
     <string name="action_sign_in_short">登录</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>

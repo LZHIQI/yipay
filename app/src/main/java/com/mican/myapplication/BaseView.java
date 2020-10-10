@@ -16,7 +16,7 @@
 
 package com.mican.myapplication;
 
-public interface BaseView<T> {
+public interface BaseView< T> {
 
 
 }

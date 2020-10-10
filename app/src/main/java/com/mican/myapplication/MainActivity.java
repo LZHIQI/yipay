@@ -34,6 +34,9 @@ public class MainActivity extends BaseActivity {
     RxManager rxManager= new RxManager();
     ActivityMainBinding inflate;
     CustomDialog customDialog;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

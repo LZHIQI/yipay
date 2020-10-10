@@ -4,9 +4,8 @@ import android.text.TextUtils;
 
 
 import com.mican.myapplication.BaseActivity;
-import com.mican.myapplication.UserManager;
 import com.mican.myapplication.net.core.CoreApiException;
-import com.mican.myapplication.util.ToastUtils;
+import com.mican.myapplication.util.LogUtils;
 
 import java.lang.ref.SoftReference;
 
@@ -62,21 +61,17 @@ public abstract class ResponseDisposable<T> extends DisposableObserver<T> {
     @Override
     public void onError(Throwable e) {
         unsubscribe();
+
         //统一处理错误异常
         CoreApiException coreApiException = FactoryException.analysisExcetpion(e);
         //用户登录失效，清除本地用户信息
         int code = coreApiException.getCode();
-        dismissDialog();
-       /* if (1 == code) {
+        if(code==1){
             onSuccess(null);
-        } else  if (-7 == code) {
-
         }else {
-            if (isToast) { ToastUtils.showNoEmptyShort(coreApiException.getDisplayMessage()); }
-            //返回错误信息
-            onFailure(coreApiException.getCode(), coreApiException.getDisplayMessage());
-        }*/
-
+            onFailure(code,coreApiException.getDisplayMessage());
+        }
+        dismissDialog();
     }
 
     @Override

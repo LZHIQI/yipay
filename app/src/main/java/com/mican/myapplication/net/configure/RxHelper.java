@@ -62,7 +62,7 @@ public class RxHelper {
                                 emitter.onComplete();
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                emitter.onError(new CoreApiException(1, ""));
+                                emitter.onError(new CoreApiException(2, ""));
                             }
                         });
                     } else {

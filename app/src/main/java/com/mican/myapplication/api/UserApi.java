@@ -1,5 +1,6 @@
 package com.mican.myapplication.api;
 
+import com.mican.myapplication.api.req.PayCallReq;
 import com.mican.myapplication.api.req.QueryReq;
 import com.mican.myapplication.api.result.Login;
 import com.mican.myapplication.api.req.Register;
@@ -60,7 +61,7 @@ public  interface UserApi {
      * 查询订单
      */
     @POST("/api/order/create")
-    Observable<Response<ArrayList<QueryOrder>>> queryOrder(@Body QueryReq queryReq);
+    Observable<Response<QueryOrder>> queryOrder(@Body QueryReq queryReq);
 
 
 
@@ -82,7 +83,7 @@ public  interface UserApi {
      * 查询支付以后的回调接口
      */
     @POST("/api/order/callBack")
-    Observable<Response<PayCallResult>> payCall(@Body QueryReq queryReq);
+    Observable<Response<PayCallResult>> payCall(@Body PayCallReq payCallReq);
 
 
 
