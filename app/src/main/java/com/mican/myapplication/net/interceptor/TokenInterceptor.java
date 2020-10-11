@@ -1,15 +1,12 @@
 package com.mican.myapplication.net.interceptor;
 
-
 import android.os.Build;
-
-
 import com.mican.myapplication.UserManager;
 import com.mican.myapplication.util.AppUtils;
 import com.mican.myapplication.util.DeviceUtils;
-import com.mican.myapplication.util.StringUtils;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 
 import okhttp3.Interceptor;
@@ -21,7 +18,7 @@ import okhttp3.Response;
  *
  */
 public class TokenInterceptor implements Interceptor {
-    public static final String REQUEST_AUTH_TOKEN = "accessToken";
+    public static final String REQUEST_AUTH_TOKEN = "Authorization";
     public static final String REQUEST_AUTH_CLIENTKEY = "clientKey";
     public static final String REQUEST_AUTH_DEVICEDKEY = "deviceKey";
     public static final String REQUEST_AUTH_VERSION = "version";
@@ -59,30 +56,10 @@ public class TokenInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
         Request authRequest = originalRequest.newBuilder().build();
-       /* if (StringUtils.isEmpty(getAuthToken())) {
+        if(UserManager.Companion.isLogin()){
             authRequest = originalRequest.newBuilder()
-                    .addHeader(REQUEST_AUTH_DEVICEDKEY, "Android")
-                    .addHeader(REQUEST_AUTH_CLIENTKEY, getAuthClientKey())
-                    .addHeader(REQUEST_AUTH_VERSION, AppUtils.getAppVersionName())
-                    .addHeader(REQUEST_AUTH_DEVICEDID, getAuthDeviceID()).build();
-        } else {
-            if (originalRequest.url().encodedPath().contains("modify_access_token")) {
-                authRequest = originalRequest.newBuilder()
-                        .addHeader(REQUEST_AUTH_DEVICEDKEY, "Android")
-                        .addHeader(REQUEST_AUTH_CLIENTKEY, getAuthClientKey())
-                        .addHeader(REQUEST_AUTH_VERSION, AppUtils.getAppVersionName())
-                        .addHeader(REQUEST_AUTH_DEVICEDID, getAuthDeviceID())
-                        .build();
-            } else {
-                authRequest = originalRequest.newBuilder()
-                        .addHeader(REQUEST_AUTH_TOKEN, getAuthToken())
-                        .addHeader(REQUEST_AUTH_DEVICEDKEY, "Android")
-                        .addHeader(REQUEST_AUTH_CLIENTKEY, getAuthClientKey())
-                        .addHeader(REQUEST_AUTH_VERSION, AppUtils.getAppVersionName())
-                        .addHeader(REQUEST_AUTH_DEVICEDID, getAuthDeviceID())
-                        .build();
-            }
-        }*/
+                    .addHeader(REQUEST_AUTH_TOKEN, Objects.requireNonNull(UserManager.Companion.getUser().getToken())).build();
+        }
         return chain.proceed(authRequest);
     }
 

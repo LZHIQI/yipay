@@ -1,10 +1,12 @@
 package com.mican.myapplication;
 
+import android.app.ActivityManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -13,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Predicate;
@@ -46,6 +49,7 @@ import com.mican.myapplication.view.custom.CustomCallBack;
 import com.mican.myapplication.view.custom.CustomDialog;
 import com.mican.myapplication.view.custom.DialogShow;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends BaseActivity<UserContractImp> implements UserContract.View {
@@ -54,15 +58,14 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
     CustomDialog customDialog,vipDialog,remainingDialog;
     Boolean isLoading=true;
     UserDetail userDetail;
-
+    Disposable disposable;
+    boolean isShowNoVip=true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         inflate= ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(inflate.getRoot());
         BarUtils.setStatusBarLightMode(this, true);
-
-        refVipInfo();
     }
 
     private void request() {
@@ -79,11 +82,16 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
                         public void getError(String message) {
                             ToastUtils.showShort(message);
                             goneView();
+                            Flowable.intervalRange(0, 60, 0, 1, TimeUnit.SECONDS)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .doOnComplete(() -> {
+                                       request();
+                                    })
+                                    .subscribe();
                         }
 
                         @Override
                         public void getSuccess(Object o) {
-                            /*inflate.openParent.setVisibility(View.VISIBLE);*/
                             if(o instanceof UserDetail){
                                 userDetail= (UserDetail) o;
                                 renderVip();
@@ -100,39 +108,42 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
 
     private void renderVip() {
       if(userDetail.memberStatus==0){ //未开通
-          customDialog   = DialogShow.showDefDialog(getThis(), new CustomCallBack() {
-                      @Override
-                      public void right() {
-                          renderNoVip();
-                      }
-
-                      @Override
-                      public void left() {
-
-
-                      }
-                  }, "您还未开通会员服务，收款功能无法使用，快去开通会员服务，马上收款！",
-                  "温馨提示",
-                  "暂不开通",
-                  "前往开通",
-                  false,
-                  false);
-
-
+          if(vipDialog!=null)vipDialog.dismiss();
+          if(isShowNoVip){
+              vipDialog = DialogShow.showDefDialog(getThis(), new CustomCallBack() {
+                          @Override
+                          public void right() {
+                              vipDialog.dismiss();
+                              isShowNoVip=false;
+                              renderNoVip();
+                          }
+                          @Override
+                          public void left() {
+                              vipDialog.dismiss();
+                              isShowNoVip=false;
+                              renderNoVip();
+                          }
+                      }, "您还未开通会员服务，收款功能无法使用，快去开通会员服务，马上收款！",
+                      "温馨提示",
+                      "暂不开通",
+                      "前往开通",
+                      false,
+                      false);
+          }else {
+              renderNoVip();
+          }
       }else if(userDetail.memberStatus==1){  //已开通
-
-
           inflate.tvVipStatus.setText("会员状态：基础版365天");
           if(userDetail.memberDay<10){
               remainingDialog   = DialogShow.showDefDialog(getThis(), new CustomCallBack() {
                           @Override
                           public void right() {
-
+                              remainingDialog.dismiss();
                           }
 
                           @Override
                           public void left() {
-
+                              remainingDialog.dismiss();
                           }
                       }, "您的会员服务即将到期，请立即续费。避免收款服务受到影响",
                       "温馨提示",
@@ -142,30 +153,94 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
                       false);
           }else {
 
+
+
+
           }
-
-
       }
     }
 
     private void renderNoVip() {
+        if( inflate.openParent.getVisibility()==View.GONE){
+            inflate.openParent.setVisibility(View.VISIBLE);
+        }
         inflate.tvVipStatus.setText("会员状态：未开通会员");
         inflate.toVip.setText("立即开通");
         inflate.toVip.setOnClickListener(view -> { //立即开通
 
-       });
+        });
         inflate.tvUserBalance.setText(String.format("账户余额：%s元",userDetail.balance));
         inflate.tvCz.setOnClickListener(view -> { //立即充值
 
         });
         inflate.appidContent.setText(userDetail.appid);
         inflate.contentAppSecret.setText(userDetail.appsecret);
-
+        renderCommend();
+        refBaseInfo();
     }
 
+    private void renderCommend() {
+        inflate.copyAppid.setOnClickListener(view -> {
+            ToastUtils.showShort("复制成功");
+            copy(inflate.appidContent.getText().toString());
+        });
+        inflate.copySecret.setOnClickListener(view -> {
+            ToastUtils.showShort("复制成功");
+            copy(inflate.contentAppSecret.getText().toString());
+        });
+        inflate.link1Copy.setOnClickListener(view -> {
+            ToastUtils.showShort("复制成功");
+            copy(inflate.link1.getText().toString());
+        });
+        inflate.link2Copy.setOnClickListener(view -> {
+            ToastUtils.showShort("复制成功");
+            copy(inflate.link2.getText().toString());
+        });
+        inflate.link3Copy.setOnClickListener(view -> {
+            ToastUtils.showShort("复制成功");
+            copy(inflate.link3.getText().toString());
+        });
+        inflate.link4Copy.setOnClickListener(view -> {
+            ToastUtils.showShort("复制成功");
+            copy(inflate.link4.getText().toString());
+        });
 
-    public  void refVipInfo(){
+        inflate.webLink1.setOnClickListener(view -> {
+            openBrowser(getThis(),inflate.link1.getText().toString());
+        });
+
+        inflate.webLink2.setOnClickListener(view -> {
+            openBrowser(getThis(),inflate.link2.getText().toString());
+        });
+        inflate.webLink3.setOnClickListener(view -> {
+            openBrowser(getThis(),inflate.link3.getText().toString());
+        });
+        inflate.webLink4.setOnClickListener(view -> {
+            openBrowser(getThis(),inflate.link4.getText().toString());
+        });
+       inflate.timeUpDate.setOnClickListener(view -> {
+            request();
+      });
+    }
+    public  void openBrowser(Context context, String url) {
+        final Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        // 注意此处的判断intent.resolveActivity()可以返回显示该Intent的Activity对应的组件名
+        // 官方解释 : Name of the component implementing an activity that can display the intent
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+            final ComponentName componentName = intent.resolveActivity(context.getPackageManager());
+            //  LogUtil.d("suyan = " + componentName.getClassName());
+            context.startActivity(Intent.createChooser(intent, "请选择浏览器"));
+            finish();
+        } else {
+            // GlobalMethod.showToast(context, "链接错误或无浏览器");
+        }
+    }
+
+    public  void refBaseInfo(){
         getRxBus().clear();
+        startService();
         getRxBus().add(
                 RxBus.getInstance().toObservable(ServiceEvent.class).subscribeWith(
                         new RxResponseDisposable<ServiceEvent>() {
@@ -175,14 +250,16 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
                             }
                         }
                 ));
-        Flowable.intervalRange(0, 300, 0, 1, TimeUnit.SECONDS)
+        if(disposable!=null) disposable.dispose();
+        disposable = Flowable.intervalRange(0, 10, 0, 1, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(aLong -> inflate.timeUpDate.setText(String.format("会员信息更新倒计时%s秒", (300 - aLong) )))
+                .doOnNext(aLong -> inflate.timeUpDate.setText(String.format("会员信息更新倒计时%s秒", (300 - aLong))))
                 .doOnComplete(() -> {
-
+                    refBaseInfo();
                 })
                 .subscribe();
 
+        getRxBus().add(disposable);
     }
 
     private void goneView() {
@@ -228,20 +305,24 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
         renderView();
     }
 
+
+
     private void renderView() {
         startService();
         if(!isEnabled()){
             inflate.btnOpen.setVisibility(View.VISIBLE);
             inflate.openParent.setVisibility(View.GONE);
-            vipDialog   = DialogShow.showDefDialog(getThis(), new CustomCallBack() {
+            if(customDialog!=null)customDialog.dismiss();
+            customDialog  = DialogShow.showDefDialog(getThis(), new CustomCallBack() {
                         @Override
                         public void right() {
+                            LogUtils.e("right");
                             toOpen();
                         }
 
                         @Override
                         public void left() {
-
+                            customDialog.dismiss();
                         }
                     }, "当前你未授权当前APP读取通知栏权限，请前往授权后再继续操作",
                     "温馨提示",
@@ -251,10 +332,12 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
                     false);
         }else {
             inflate.btnOpen.setVisibility(View.GONE);
+            inflate.openParent.setVisibility(View.VISIBLE);
             request();
         }
         inflate.btnOpen.setOnClickListener(view -> {
             if(!isEnabled()){
+                LogUtils.e("btnOpen");
                 toOpen();
             }
         });
@@ -285,23 +368,34 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(customDialog!=null){
+            customDialog.dismiss();
+        }
+        if(vipDialog!=null){
+            vipDialog.dismiss();
+        }
+        if(remainingDialog!=null){
+            remainingDialog.dismiss();
+        }
         rxManager.clear();
     }
 
     public void startService(){
-        Intent intent = new Intent(MainActivity.this, MyNotificationService.class);//启动服务
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);//启动服务
-        }else {
-            startService(intent);
+        if(!isServiceRunning(getThis(),"com.mican.myapplication.MyNotificationService")){
+            Intent intent = new Intent(MainActivity.this, MyNotificationService.class);//启动服务
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent);//启动服务
+            }else {
+                startService(intent);
+            }
         }
     }
 
-    void copy(){
+    void copy(String copy){
         //获取剪贴板管理器：
         ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 // 创建普通字符型ClipData
-        ClipData mClipData = ClipData.newPlainText("Label", "这里是要复制的文字");
+        ClipData mClipData = ClipData.newPlainText(null, copy);
 // 将ClipData内容放到系统剪贴板里。
         cm.setPrimaryClip(mClipData);
     }
@@ -315,4 +409,32 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
     public void getSuccess(Object o) {
 
     }
+
+    /**
+     * 判断服务是否开启
+     * @param context
+     * @param ServiceName
+     *      服务的完整路径(例:com.example.service)
+     * @return
+     */
+    public static boolean isServiceRunning(Context context, String ServiceName) {
+        if (TextUtils.isEmpty(ServiceName)) {
+            return false;
+        }
+        ActivityManager myManager =
+                (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+        ArrayList<ActivityManager.RunningServiceInfo> runningService =
+                (ArrayList<ActivityManager.RunningServiceInfo>)
+                        myManager.getRunningServices(30);
+        for (int i = 0; i < runningService.size(); i++) {
+            LogUtils.e(runningService.get(i).service.getClassName());
+            if (runningService.get(i).service.getClassName().toString()
+                    .equals(ServiceName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }

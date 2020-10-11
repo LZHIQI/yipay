@@ -109,6 +109,7 @@
                   android:paddingBottom="@dimen/dp_3"
                   android:paddingStart="@dimen/dp_12"
                   android:paddingEnd="@dimen/dp_12"
+                  android:id="@+id/copy_appid"
                   android:text="复制"
                   android:background="@drawable/btn_select_def"
                   android:textColor="@color/white"
@@ -155,6 +156,7 @@
                   android:paddingStart="@dimen/dp_12"
                   android:paddingEnd="@dimen/dp_12"
                   android:text="复制"
+                  android:id="@+id/copy_secret"
                   android:background="@drawable/btn_select_def"
                   android:textColor="@color/white"
                   app:layout_constraintBottom_toBottomOf="@id/tv_user_secret"
@@ -261,6 +263,7 @@
                       android:background="@drawable/btn_select_def_radius"
                       android:textSize="@dimen/sp_14"
                       android:text="手机浏览器打开"
+                      android:id="@+id/web_link1"
                       android:textColor="@color/white"
                       android:paddingTop="@dimen/dp_4"
                       android:paddingBottom="@dimen/dp_4"
@@ -331,6 +334,7 @@
                       android:paddingTop="@dimen/dp_4"
                       android:paddingBottom="@dimen/dp_4"
                       android:paddingStart="@dimen/dp_12"
+                      android:id="@+id/web_link2"
                       android:paddingEnd="@dimen/dp_12"
                       app:layout_constraintTop_toTopOf="@id/link2_copy"
                       app:layout_constraintBottom_toBottomOf="@id/link2_copy"
@@ -395,6 +399,7 @@
                       android:text="手机浏览器打开"
                       android:textColor="@color/white"
                       android:paddingTop="@dimen/dp_4"
+                      android:id="@+id/web_link3"
                       android:paddingBottom="@dimen/dp_4"
                       android:paddingStart="@dimen/dp_12"
                       android:paddingEnd="@dimen/dp_12"
@@ -460,6 +465,7 @@
                       android:background="@drawable/btn_select_def_radius"
                       android:textSize="@dimen/sp_14"
                       android:text="手机浏览器打开"
+                      android:id="@+id/web_link4"
                       android:textColor="@color/white"
                       android:paddingTop="@dimen/dp_4"
                       android:paddingBottom="@dimen/dp_4"
@@ -489,20 +495,18 @@
               app:layout_constraintTop_toTopOf="parent"
               app:layout_constraintWidth_percent="0.8" />
 
-          <ProgressBar
-              android:id="@+id/loading"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="center"
-              android:visibility="gone"
-              app:layout_constraintEnd_toEndOf="parent"
-              app:layout_constraintBottom_toBottomOf="parent"
-              app:layout_constraintStart_toStartOf="parent"
-              app:layout_constraintTop_toTopOf="parent"
-              app:layout_constraintVertical_bias="0.3"
-           />
       </androidx.constraintlayout.widget.ConstraintLayout>
   </androidx.core.widget.NestedScrollView>
-
-
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

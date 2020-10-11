@@ -17,7 +17,6 @@
         <!-- Customize your theme here. -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:navigationBarColor">@color/white</item>
         <item name="android:windowTranslucentStatus">false</item> <!--//windowTranslucentStatus,如果为true，状态栏就会变成半透明的-->
         <!--windowTranslucentStatus、windowTranslucentNavigation，都可以触发LAYOUT_FULLSCREEN 、LAYOUT_STABLE
         android windowTranslucentNavigation-->

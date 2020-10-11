@@ -1,5 +1,6 @@
 package com.mican.myapplication.view.custom;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,7 @@ public class CustomDialogBuilder {
      CustomDialog customDialog;
 
     private int  dialog_bg_mode;
-    private Context context;
+    private Activity context;
     private int layoutId;
     private boolean enableCancel=true;
     public CustomDialogBuilder setLayoutId(int layoutId) {
@@ -33,7 +34,7 @@ public class CustomDialogBuilder {
         return this;
     }
 
-    public CustomDialogBuilder(Context context) {
+    public CustomDialogBuilder(Activity context) {
         this.context = context;
     }
     public int getDialog_bg_mode() {
@@ -54,7 +55,7 @@ public class CustomDialogBuilder {
         return context;
     }
 
-    public CustomDialogBuilder setContext(Context context) {
+    public CustomDialogBuilder setContext(Activity context) {
         this.context = context;
        return this;
     }
@@ -81,7 +82,9 @@ public class CustomDialogBuilder {
     public void show(){
         if(customDialog!=null){
             dismiss();
-            customDialog.show();
+            if(context!=null){
+                customDialog.show();
+            };
         }
     }
 

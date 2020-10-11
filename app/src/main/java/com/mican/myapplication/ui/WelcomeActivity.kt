@@ -10,8 +10,10 @@ import com.mican.myapplication.databinding.ActivityWelcomeBinding
 import com.mican.myapplication.ui.login.LoginActivity
 import com.mican.myapplication.util.ActivityUtils
 import com.mican.myapplication.util.BarUtils
+import com.mican.myapplication.util.LogUtils
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
 class WelcomeActivity : BaseActivity<BasePresenter<*>>() {
@@ -26,14 +28,15 @@ class WelcomeActivity : BaseActivity<BasePresenter<*>>() {
             toRouter()
         }
     }
+    var subscribe: Disposable?=null
     fun interval(){
-        Flowable.intervalRange(0, 6, 0, 1, TimeUnit.SECONDS)
+        subscribe= Flowable.intervalRange(0, 6, 0, 1, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext {
-                    inflate.tvCode.text="" + (5 - it) + "s"
+                    inflate.tvCode.text = "" + (5 - it) + "s"
                 }
                 .doOnComplete {
-                     toRouter()
+                    toRouter()
                 }
                 .subscribe()
     }
@@ -48,6 +51,7 @@ class WelcomeActivity : BaseActivity<BasePresenter<*>>() {
             ActivityUtils.startActivity(getThis(), intent)
             finish()
         }
+        subscribe?.dispose()
     }
 
 }
