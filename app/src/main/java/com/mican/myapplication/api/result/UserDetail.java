@@ -41,4 +41,7 @@ public class UserDetail {
     public int isOffline;
     public String appid;
     public String appsecret;
+
+    public int day;
+    public String  mealVersion;
 }

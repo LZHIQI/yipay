@@ -58,7 +58,7 @@ public class MyNotificationService extends NotificationListenerService {
             NotificationManager service = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             service.createNotificationChannel(channel);
          }
-            Notification notification =new NotificationCompat.Builder(this,"yipay")
+        Notification notification =new NotificationCompat.Builder(this,"yipay")
                     .setContentTitle("易支付")
                     .setContentText("")
                     .setAutoCancel(false)

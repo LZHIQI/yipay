@@ -15,7 +15,7 @@ public class CustomDialogBuilder {
         public static  final int  SHADOW_NO_MODE= 2;
     }
      CustomDialog customDialog;
-
+    private boolean isCancelable=true;
     private int  dialog_bg_mode;
     private Activity context;
     private int layoutId;
@@ -66,6 +66,7 @@ public class CustomDialogBuilder {
         customDialog.setCancelable(enableCancel);
         View inflate = LayoutInflater.from(context).inflate(layoutId, null);
         customDialog.initView(inflate);
+        customDialog.setCancelable(isCancelable);
       return   customDialog;
     }
 
@@ -76,6 +77,7 @@ public class CustomDialogBuilder {
         customDialog.setSize(wScale,hScale);
         View inflate = LayoutInflater.from(context).inflate(layoutId, null);
         customDialog.initView(inflate);
+        customDialog.setCancelable(isCancelable);
         return   customDialog;
     }
 
@@ -86,6 +88,12 @@ public class CustomDialogBuilder {
                 customDialog.show();
             };
         }
+    }
+
+
+    public CustomDialogBuilder setCancelable(boolean isCancelable) {
+        this.isCancelable = isCancelable;
+        return this;
     }
 
     public void  dismiss(){

@@ -77,6 +77,7 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         parentView=v;
    }
 
+
     public View getParentView() {
         return parentView;
     }

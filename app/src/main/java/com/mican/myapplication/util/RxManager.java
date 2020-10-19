@@ -35,6 +35,13 @@ public class RxManager {
     }
 
 
+    public void unbind(Disposable disposable) {
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.remove(disposable);
+
+        }
+    }
+
     public void add(Completable disposable, final Action onComplete, final Consumer<? super Throwable> onError) {
         if (mCompositeDisposable != null && disposable != null) {
             mCompositeDisposable.add(disposable.subscribeOn(Schedulers.io())

@@ -15,7 +15,6 @@ import com.mican.myapplication.api.req.Register
 
 import com.mican.myapplication.util.ActivityUtils
 import com.mican.myapplication.util.BarUtils
-import com.mican.myapplication.util.LogUtils
 import com.mican.myapplication.util.ToastUtils
 
 class LoginActivity : BaseActivity<UserContractImp>(),UserContract.View {
@@ -28,14 +27,13 @@ class LoginActivity : BaseActivity<UserContractImp>(),UserContract.View {
         BarUtils.setStatusBarLightMode(this, true)
         val username = findViewById<EditText>(R.id.username)
         val password = findViewById<EditText>(R.id.password)
-        login= findViewById<TextView>(R.id.login)
+        login= findViewById(R.id.login)
         val forgetPwd = findViewById<TextView>(R.id.to_new_password)
         val register = findViewById<TextView>(R.id.to_register)
         val loading = findViewById<ProgressBar>(R.id.loading)
         register.setOnClickListener {
             val intent=Intent(getThis(),RegisterActivity::class.java)
             ActivityUtils.startActivity(intent)
-
         }
         username.afterTextChanged {
             userName=it.trim()

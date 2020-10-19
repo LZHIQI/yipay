@@ -55,11 +55,12 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends BaseActivity<UserContractImp> implements UserContract.View {
     RxManager rxManager= new RxManager();
     ActivityMainBinding inflate;
-    CustomDialog customDialog,vipDialog,remainingDialog;
+    CustomDialog customDialog,vipDialog,remainingDialog,balanceDialog;
     Boolean isLoading=true;
     UserDetail userDetail;
     Disposable disposable;
     boolean isShowNoVip=true;
+    Disposable subscribe;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,12 +83,18 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
                         public void getError(String message) {
                             ToastUtils.showShort(message);
                             goneView();
-                            Flowable.intervalRange(0, 60, 0, 1, TimeUnit.SECONDS)
+                            if(subscribe!=null){
+                                getRxBus().unbind(subscribe);
+                            }
+                            subscribe = Flowable.intervalRange(0, 20, 0, 1, TimeUnit.SECONDS)
                                     .observeOn(AndroidSchedulers.mainThread())
+                                    .doOnNext(aLong -> {
+                                    })
                                     .doOnComplete(() -> {
-                                       request();
+                                        request();
                                     })
                                     .subscribe();
+                            getRxBus().add(subscribe);
                         }
 
                         @Override
@@ -108,8 +115,8 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
 
     private void renderVip() {
       if(userDetail.memberStatus==0){ //未开通
-          if(vipDialog!=null)vipDialog.dismiss();
           if(isShowNoVip){
+              if(vipDialog!=null)vipDialog.dismiss();
               vipDialog = DialogShow.showDefDialog(getThis(), new CustomCallBack() {
                           @Override
                           public void right() {
@@ -133,8 +140,9 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
               renderNoVip();
           }
       }else if(userDetail.memberStatus==1){  //已开通
-          inflate.tvVipStatus.setText("会员状态：基础版365天");
-          if(userDetail.memberDay<10){
+          if(0<userDetail.day&&userDetail.day<10){
+              inflate.tvVipStatus.setText(String.format("会员状态：%s%s天",userDetail.mealVersion,userDetail.day));
+              if(remainingDialog!=null)remainingDialog.dismiss();
               remainingDialog   = DialogShow.showDefDialog(getThis(), new CustomCallBack() {
                           @Override
                           public void right() {
@@ -151,12 +159,53 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
                       "前往续费",
                       false,
                       false);
+          }else if (userDetail.day<=0) {
+              inflate.tvVipStatus.setText("会员已过期");
+              if(remainingDialog!=null)remainingDialog.dismiss();
+              remainingDialog   = DialogShow.showDefDialog(getThis(), new CustomCallBack() {
+                          @Override
+                          public void right() {
+                              remainingDialog.dismiss();
+                          }
+
+                          @Override
+                          public void left() {
+                              remainingDialog.dismiss();
+                          }
+                      }, "您的会员服务已到期，请立即续费。功能在续费成功后才能正常使用。",
+                      "温馨提示",
+                      "暂不续费",
+                      "前往续费",
+                      false,
+                      false);
           }else {
-
-
-
-
+              inflate.tvVipStatus.setText(String.format("会员状态：%s%s天",userDetail.mealVersion,userDetail.day));
           }
+          inflate.tvUserBalance.setText(String.format("账户余额：%s元",userDetail.balance));
+          if (userDetail.balance<=10) {
+              if(balanceDialog!=null)balanceDialog.dismiss();
+              balanceDialog = DialogShow.showDefDialog(getThis(), new CustomCallBack() {
+                          @Override
+                          public void right() {
+                              balanceDialog.dismiss();
+                          }
+
+                          @Override
+                          public void left() {
+                              balanceDialog.dismiss();
+                          }
+                      }, "您的账户余额少于10元，请立即充值。避免系统账户无法扣除交易手续费，无法正常使用。",
+                      "温馨提示",
+                      "暂不充值",
+                      "前往充值",
+                      false,
+                      false);
+          }
+
+          inflate.appidContent.setText(userDetail.appid);
+          inflate.contentAppSecret.setText(userDetail.appsecret);
+          renderCommend();
+          refBaseInfo();
       }
     }
 
@@ -360,9 +409,6 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        LogUtils.e("sssssssssssssss");
-
     }
 
     @Override
@@ -376,6 +422,9 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
         }
         if(remainingDialog!=null){
             remainingDialog.dismiss();
+        }
+        if(balanceDialog!=null){
+            balanceDialog.dismiss();
         }
         rxManager.clear();
     }
