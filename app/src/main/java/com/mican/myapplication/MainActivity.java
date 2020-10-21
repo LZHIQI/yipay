@@ -1,6 +1,5 @@
 package com.mican.myapplication;
 
-import android.app.ActivityManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ComponentName;
@@ -11,20 +10,13 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Predicate;
 
 import android.provider.Settings;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -37,25 +29,24 @@ import com.mican.myapplication.event.ServiceEvent;
 import com.mican.myapplication.ui.login.LoginActivity;
 import com.mican.myapplication.util.ActivityUtils;
 import com.mican.myapplication.util.BarUtils;
-import com.mican.myapplication.util.GsonUtils;
-import com.mican.myapplication.util.JsonUtils;
 import com.mican.myapplication.util.LogUtils;
+import com.mican.myapplication.util.NotificationUtils;
 import com.mican.myapplication.util.RxManager;
+import com.mican.myapplication.util.ServiceUtils;
 import com.mican.myapplication.util.ToastUtils;
-import com.mican.myapplication.util.Utils;
+import com.mican.myapplication.util.VersionUtils;
 import com.mican.myapplication.util.rx.RxBus;
 import com.mican.myapplication.util.rx.RxResponseDisposable;
 import com.mican.myapplication.view.custom.CustomCallBack;
 import com.mican.myapplication.view.custom.CustomDialog;
 import com.mican.myapplication.view.custom.DialogShow;
 
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends BaseActivity<UserContractImp> implements UserContract.View {
     RxManager rxManager= new RxManager();
     ActivityMainBinding inflate;
-    CustomDialog customDialog,vipDialog,remainingDialog,balanceDialog;
+    CustomDialog customDialog,vipDialog,remainingDialog,balanceDialog,notificationDialog;
     Boolean isLoading=true;
     UserDetail userDetail;
     Disposable disposable;
@@ -67,6 +58,7 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
         inflate= ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(inflate.getRoot());
         BarUtils.setStatusBarLightMode(this, true);
+        VersionUtils.Companion.checkVersion1(this);
     }
 
     private void request() {
@@ -319,8 +311,14 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
     }
 
     private void toOpen(){
-       Intent intent_s = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
-       startActivity(intent_s);
+        Intent intent_s=null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+            intent_s = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
+        } else {
+            intent_s = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+        }
+        startActivity(intent_s);
+
    }
 
     @Override
@@ -358,6 +356,7 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
 
     private void renderView() {
         startService();
+
         if(!isEnabled()){
             inflate.btnOpen.setVisibility(View.VISIBLE);
             inflate.openParent.setVisibility(View.GONE);
@@ -426,16 +425,55 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
         if(balanceDialog!=null){
             balanceDialog.dismiss();
         }
+        if(notificationDialog!=null){
+            notificationDialog.dismiss();
+        }
         rxManager.clear();
     }
 
     public void startService(){
-        if(!isServiceRunning(getThis(),"com.mican.myapplication.MyNotificationService")){
-            Intent intent = new Intent(MainActivity.this, MyNotificationService.class);//启动服务
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(intent);//启动服务
-            }else {
-                startService(intent);
+        if(!NotificationUtils.areNotificationsEnabled()){
+            if(notificationDialog!=null) {
+               if(notificationDialog.isShowing())return;
+            };
+            notificationDialog  = DialogShow.showMkDialog(getThis(), new CustomCallBack() {
+                        @Override
+                        public void right() {
+                            Intent intent = new Intent();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                                intent.putExtra("android.provider.extra.APP_PACKAGE", getPackageName());
+                            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {  //5.0
+                                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                                intent.putExtra("app_package", getPackageName());
+                                intent.putExtra("app_uid", getApplicationInfo().uid);
+                                startActivity(intent);
+                            } else {
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                                intent.setData(Uri.fromParts("package", getPackageName(), null));
+                            }
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void left() {
+
+                        }
+                    }, "您未授权当前APP开启通知栏权限，请开启后再继续操作",
+                    "温馨提示",
+                    "开启",
+                    false,
+                    false);
+        }else {
+            if(notificationDialog!=null) notificationDialog.dismiss();
+            if(!isServiceRunning()){
+                Intent intent = new Intent(MainActivity.this, MyNotificationService.class);//启动服务
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(intent);//启动服务
+                }else {
+                    startService(intent);
+                }
             }
         }
     }
@@ -461,29 +499,13 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
 
     /**
      * 判断服务是否开启
-     * @param context
-     * @param ServiceName
      *      服务的完整路径(例:com.example.service)
      * @return
      */
-    public static boolean isServiceRunning(Context context, String ServiceName) {
-        if (TextUtils.isEmpty(ServiceName)) {
-            return false;
-        }
-        ActivityManager myManager =
-                (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
-        ArrayList<ActivityManager.RunningServiceInfo> runningService =
-                (ArrayList<ActivityManager.RunningServiceInfo>)
-                        myManager.getRunningServices(30);
-        for (int i = 0; i < runningService.size(); i++) {
-            LogUtils.e(runningService.get(i).service.getClassName());
-            if (runningService.get(i).service.getClassName().toString()
-                    .equals(ServiceName)) {
-                return true;
-            }
-        }
-        return false;
+    public  boolean isServiceRunning() {
+       return ServiceUtils.isServiceRunning(MyNotificationService.class);
     }
+
 
 
 }

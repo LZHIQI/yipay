@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <root-path
+        name="root"
+        path="" />
+    <cache-path
+        name="cache"
+        path="path" />  <!--Context.getFileDir()-->
+    <external-cache-path
+        name="name"
+        path="path" />  <!--getCacheDir()-->
+    <external-files-path
+        name="name"
+        path="path" />  <!--Environment.getExternalStorageDirectory()-->
+    <external-path name="down"
+        path="Download/"/>
+    <external-path
+        name="pic"
+        path="Pictures" />
+    <external-path
+        name="pic"
+        path=".mc_coach" />  <!--Context#getExternalFilesDir(String) 和Context.getExternalFilesDir(null)-->
+    <files-path
+        name="files"
+        path="path" />  <!--Context.getExternalCacheDir()-->
+    <external-media-path
+        name="name"
+        path="path" />
+
+</paths>

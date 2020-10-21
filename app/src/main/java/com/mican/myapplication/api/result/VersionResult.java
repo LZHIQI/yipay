@@ -1,5 +1,7 @@
 package com.mican.myapplication.api.result;
 
+import java.io.Serializable;
+
 /**
  * @name lzq
  * @class name：com.mican.view_module.contract.result
@@ -9,26 +11,23 @@ package com.mican.myapplication.api.result;
  * @chang
  * @class describe
  */
-public class VersionResult {
-
+public class VersionResult implements Serializable {
 
     /**
-     * versionDescription : string
-     * clientKey : string
-     * createTime : 2020-10-13T01:49:48.390Z
-     * creatorId : string
-     * deviceKey : string
-     * forceUpdate : 0
-     * id : string
-     * versionNumber : string
+     * createTime : 2019-11-21 21:06:42
+     * versionCode : 3
+     * versionName : 0.0.3
+     * url : https://rebate-test.oss-cn-hangzhou.aliyuncs.com/rebate-test/1573975447711_1920*1080.jpg
+     * md5 : 4a58ecb03082750cc7e174db5be2b58b
+     * isForce : 0
+     * introduce : 修复bug
      */
-    public String versionDescription;
-    public String clientKey;
+
     public String createTime;
-    public String creatorId;
-    public String deviceKey;
-    public int forceUpdate;
-    public String id;
-    public String versionNumber;
-    public String appUrl;
+    public Integer versionCode;
+    public String versionName;
+    public String url;
+    public String md5;
+    public Integer isForce;
+    public String introduce;
 }

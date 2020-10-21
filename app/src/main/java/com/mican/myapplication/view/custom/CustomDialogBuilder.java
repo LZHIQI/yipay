@@ -19,20 +19,16 @@ public class CustomDialogBuilder {
     private int  dialog_bg_mode;
     private Activity context;
     private int layoutId;
-    private boolean enableCancel=true;
+
     public CustomDialogBuilder setLayoutId(int layoutId) {
         this.layoutId = layoutId;
         return this;
     }
 
     public boolean isEnableCancel() {
-        return enableCancel;
+        return isCancelable;
     }
 
-    public CustomDialogBuilder setEnableCancel(boolean enableCancel) {
-        this.enableCancel = enableCancel;
-        return this;
-    }
 
     public CustomDialogBuilder(Activity context) {
         this.context = context;
@@ -63,10 +59,9 @@ public class CustomDialogBuilder {
 
     public   CustomDialog create(){
         customDialog=new CustomDialog(getContext(),getDialog_bg_mode());
-        customDialog.setCancelable(enableCancel);
+        customDialog.setCancelable(isCancelable);
         View inflate = LayoutInflater.from(context).inflate(layoutId, null);
         customDialog.initView(inflate);
-        customDialog.setCancelable(isCancelable);
       return   customDialog;
     }
 

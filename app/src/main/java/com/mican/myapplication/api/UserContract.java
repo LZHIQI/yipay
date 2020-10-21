@@ -48,8 +48,7 @@ public interface UserContract {
 
         public  abstract void payCall( PayCallReq queryReq,View view);
 
-
-
+       public  abstract void checkVersion( View view);
 
     }
 }

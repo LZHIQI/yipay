@@ -1,8 +1,10 @@
 package com.mican.myapplication;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import com.mican.myapplication.util.RxManager;
+import com.mican.myapplication.util.SubmitProgressDialog;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,5 +46,106 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
 
     public BaseActivity<T> getThis() {
         return this;
+    }
+
+    public void dismissProgressDialog() {
+        try {
+
+            if (progressDialog != null) {
+                progressDialog.dismiss();
+                progressDialog.cancel();
+            }
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        } finally {
+
+            progressDialog = null;
+        }
+    }
+    public SubmitProgressDialog progressDialog;
+    /**
+     * 显示进度条
+     */
+    public void showProgressDialog(String message) {
+        try {
+            dismissProgressDialog();
+            if (isFinishing()) {
+                return;
+            }
+            progressDialog = new SubmitProgressDialog(this, message);
+            progressDialog.show();
+            progressDialog.setCancelable(false);
+        } catch (Exception e) {
+
+        }
+    }
+
+    /**
+     * 显示进度条
+     */
+    public void showProgressDialog( ) {
+        try {
+            dismissProgressDialog();
+            if (isFinishing()) {
+                return;
+            }
+            progressDialog = new SubmitProgressDialog(this, null);
+            progressDialog.show();
+            progressDialog.setCancelable(false);
+        } catch (Exception e) {
+
+        }
+    }
+    public void showProgressDialog( boolean cancel) {
+        try {
+            dismissProgressDialog();
+            if (isFinishing()) {
+                return;
+            }
+            progressDialog = new SubmitProgressDialog(this, null);
+            progressDialog.show();
+            progressDialog.setCancelable(cancel);
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void showProgressDialog(String message, boolean cancel) {
+        try {
+            dismissProgressDialog();
+            if (isFinishing()) {
+                return;
+            }
+            progressDialog = new SubmitProgressDialog(this, message);
+            progressDialog.show();
+            progressDialog.setCancelable(cancel);
+        } catch (Exception e) {
+
+        }
+    }
+
+    /**
+     * 显示进度条
+     */
+    public void showProgressDialog(String message, DialogInterface.OnKeyListener listener) {
+        try {
+            dismissProgressDialog();
+            if (isFinishing()) {
+                return;
+            }
+            progressDialog = new SubmitProgressDialog(this);
+            progressDialog.setOnKeyListener(listener);
+            progressDialog.show();
+            progressDialog.setProgressText(message);
+        } catch (Exception e) {
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (rxBus != null) rxBus.clear();
+        dismissProgressDialog();
     }
 }

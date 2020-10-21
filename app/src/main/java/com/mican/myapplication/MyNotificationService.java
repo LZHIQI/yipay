@@ -13,12 +13,20 @@ import android.os.Message;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.mican.myapplication.event.ServiceEvent;
+import com.mican.myapplication.util.GsonUtils;
+import com.mican.myapplication.util.JsonUtils;
 import com.mican.myapplication.util.LogUtils;
 import com.mican.myapplication.util.ToastUtils;
 import com.mican.myapplication.util.rx.RxBus;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.core.app.NotificationCompat;
 
@@ -77,8 +85,9 @@ public class MyNotificationService extends NotificationListenerService {
     public void onNotificationPosted(StatusBarNotification sbn) {
         //        super.onNotificationPosted(sbn);
         try {
+             LogUtils.e(GsonUtils.toJson(sbn));
             //有些通知不能解析出TEXT内容，这里做个信息能判断
-            StringBuffer stringBuffer=new StringBuffer();
+            StringBuilder stringBuffer=new StringBuilder();
             if (sbn.getNotification() != null) {
                 nMessage = sbn.getNotification().tickerText;
                 stringBuffer.append("nMessage"+nMessage);
@@ -103,7 +112,6 @@ public class MyNotificationService extends NotificationListenerService {
               }
             }
         } catch (Exception e) {
-
             Log.e("NotificationListener","不可解析的通知");
             Toast.makeText(MyNotificationService.this, "不可解析的通知", Toast.LENGTH_SHORT).show();
         }
@@ -111,6 +119,20 @@ public class MyNotificationService extends NotificationListenerService {
     }
 
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RxBus.getInstance().post(new ServiceEvent());
+    }
 
     class MyHandler extends Handler {
 
@@ -127,14 +149,70 @@ public class MyNotificationService extends NotificationListenerService {
         }
 
     }
-
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        RxBus.getInstance().post(new ServiceEvent());
+    public void onNotificationRemoved(StatusBarNotification sbn, RankingMap rankingMap) {
+    }
+    @Override
+    public StatusBarNotification[] getActiveNotifications() {
+        return super.getActiveNotifications();
+    }
+    @Override
+    public void onListenerConnected() {
+        super.onListenerConnected();
+        LogUtils.e("onListenerConnected");
     }
 
+    private Map<String, Object> getNotiInfo(Notification notification) {
+        int key = 0;
+        if (notification == null)
+            return null;
+        RemoteViews views = notification.contentView;
+        if (views == null)
+            return null;
+        Class secretClass = views.getClass();
 
+        try {
+            Map<String, Object> text = new HashMap<>();
 
+            Field outerFields[] = secretClass.getDeclaredFields();
+            for (int i = 0; i < outerFields.length; i++) {
+                if (!outerFields[i].getName().equals("mActions"))
+                    continue;
 
+                outerFields[i].setAccessible(true);
+
+                ArrayList<Object> actions = (ArrayList<Object>) outerFields[i].get(views);
+                for (Object action : actions) {
+                    Field innerFields[] = action.getClass().getDeclaredFields();
+                    Object value = null;
+                    Integer type = null;
+                    for (Field field : innerFields) {
+                        field.setAccessible(true);
+                        if (field.getName().equals("value")) {
+                            value = field.get(action);
+                        } else if (field.getName().equals("type")) {
+                            type = field.getInt(action);
+                        }
+                    }
+                    // 经验所得 type 等于9 10为短信title和内容，不排除其他厂商拿不到的情况
+                    if (type != null && (type == 9 || type == 10)) {
+                        if (key == 0) {
+                            text.put("title", value != null ? value.toString() : "");
+                        } else if (key == 1) {
+                            text.put("text", value != null ? value.toString() : "");
+                        } else {
+                            text.put(Integer.toString(key), value != null ? value.toString() : null);
+                        }
+                        key++;
+                    }
+                }
+                key = 0;
+
+            }
+            return text;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

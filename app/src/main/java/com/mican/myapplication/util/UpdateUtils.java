@@ -61,8 +61,8 @@ public class UpdateUtils {
         return downLoadManager;
     }
 
-    public static boolean isUpdate( String updateCode) {
-        return isDownLoad(updateCode, AppUtils.getAppVersionName() );
+    public static boolean isUpdate( int updateCode) {
+        return isDownLoad(updateCode, AppUtils.getAppVersionCode() );
     }
 
     private static boolean isSpace(final String s) {
@@ -105,23 +105,9 @@ public class UpdateUtils {
         return download;
     }
 
-    public static boolean isDownLoad(String update_code, String path_code) {
-        if(StringUtils.isEmpty(update_code)||StringUtils.isEmpty(path_code))return false;
+    public static boolean isDownLoad(int update_code, int path_code) {
         try {
-            String[] update_split = update_code.split("\\.");
-            String[] path_split = path_code.split("\\.");
-
-            for (int i = 0; i < update_split.length; i++) {
-                String update_str= update_split[i];
-                String path_str=StringUtils.isEmpty( path_split[i])?"0": path_split[i];
-                LogUtils.e("update_str"+update_str +"        path_str"+path_str);
-                int up_version = Integer.parseInt(update_str);
-                int path_version = Integer.parseInt(path_str);
-                if(up_version>path_version){
-                    return true;
-                }
-            }
-            return false;
+            return update_code>path_code;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -133,7 +119,7 @@ public class UpdateUtils {
      * @param updateType
      * @param versionCode
      */
-    public void startLoading(int updateType, String versionCode, String android_url) {
+    public void startLoading(int updateType, int versionCode, String android_url) {
         LogUtils.e("  downloadApkPath       processName  " + "updateType" + updateType);
         this.android_url=android_url;
         switch (updateType) {
@@ -144,7 +130,7 @@ public class UpdateUtils {
         }
     }
 
-    public void Loading( String versionCode) {
+    public void Loading( int versionCode) {
         if(context==null)return;
         if (!loading) {//检测是否已经在下载
             try {
@@ -220,7 +206,7 @@ public class UpdateUtils {
      * @param downloadApkPath true :表示存在
      * @return
      */
-    private boolean checkIsExists(String downloadApkPath, Context activity, String versionCode) {
+    private boolean checkIsExists(String downloadApkPath, Context activity, int versionCode) {
         if(context==null)return false;
         //先检查本地是否已经有需要升级版本的安装包，如有就不需要再下载
         File targetApkFile = new File(downloadApkPath);
@@ -228,9 +214,8 @@ public class UpdateUtils {
             PackageManager pm = activity.getPackageManager();
             PackageInfo info = pm.getPackageArchiveInfo(downloadApkPath, PackageManager.GET_ACTIVITIES);
             if (info != null) {
-                String versionName = String.valueOf(info.versionName);
                 //比较已下载到本地的apk安装包，与服务器上apk安装包的版本号是否一致
-                if (versionName.equals(versionCode)) {
+                if (versionCode>(info.versionCode)) {
                     installApk(activity);
                     return true;
                 }

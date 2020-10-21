@@ -3,6 +3,7 @@ package com.mican.myapplication.api;
 import com.mican.myapplication.User;
 import com.mican.myapplication.api.req.PayCallReq;
 import com.mican.myapplication.api.req.QueryReq;
+import com.mican.myapplication.api.req.VersionReq;
 import com.mican.myapplication.api.result.LoginResult;
 import com.mican.myapplication.api.req.Register;
 import com.mican.myapplication.api.result.MerchantStatus;
@@ -11,6 +12,7 @@ import com.mican.myapplication.api.result.QueryOrder;
 import com.mican.myapplication.api.result.QueryStatus;
 import com.mican.myapplication.api.result.TcResult;
 import com.mican.myapplication.api.result.UserDetail;
+import com.mican.myapplication.api.result.VersionResult;
 import com.mican.myapplication.net.core.Response;
 
 import java.util.ArrayList;
@@ -88,4 +90,6 @@ public  interface UserApi {
 
 
 
+    @POST("/api/order/callBack")
+    Observable<Response<VersionResult>> checkVersion(@Body VersionReq versionReq);
 }

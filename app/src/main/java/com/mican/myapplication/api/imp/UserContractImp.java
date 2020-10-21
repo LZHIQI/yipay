@@ -6,6 +6,7 @@ import com.mican.myapplication.api.UserContract;
 import com.mican.myapplication.api.req.PayCallReq;
 import com.mican.myapplication.api.req.QueryReq;
 import com.mican.myapplication.api.req.Register;
+import com.mican.myapplication.api.req.VersionReq;
 import com.mican.myapplication.api.result.LoginResult;
 import com.mican.myapplication.api.result.MerchantStatus;
 import com.mican.myapplication.api.result.PayCallResult;
@@ -13,6 +14,7 @@ import com.mican.myapplication.api.result.QueryOrder;
 import com.mican.myapplication.api.result.QueryStatus;
 import com.mican.myapplication.api.result.TcResult;
 import com.mican.myapplication.api.result.UserDetail;
+import com.mican.myapplication.api.result.VersionResult;
 import com.mican.myapplication.net.ApiService;
 import com.mican.myapplication.net.configure.ResponseDisposable;
 import com.mican.myapplication.net.configure.RxHelper;
@@ -150,6 +152,22 @@ public class UserContractImp extends UserContract.Presenter {
                 .compose(RxHelper.rxSchedulerObservable()).subscribeWith(new ResponseDisposable<PayCallResult>(mContext,true) {
                     @Override
                     protected void onSuccess(PayCallResult  response) {
+                        view.getSuccess(response);
+                    }
+                    @Override
+                    protected void onFailure(int errorCode, String errorMsg) {
+                        view.getError(errorMsg);
+                    }
+                })
+        );
+    }
+
+    @Override
+    public void checkVersion(UserContract.View view) {
+        mRxManager.add(ApiService.createApi(UserApi.class).checkVersion(new VersionReq())
+                .compose(RxHelper.rxSchedulerObservable()).subscribeWith(new ResponseDisposable<VersionResult>(mContext,true) {
+                    @Override
+                    protected void onSuccess(VersionResult  response) {
                         view.getSuccess(response);
                     }
                     @Override
