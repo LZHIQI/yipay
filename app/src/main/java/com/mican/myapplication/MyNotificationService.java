@@ -16,6 +16,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.mican.myapplication.data.NotificationResult;
 import com.mican.myapplication.event.ServiceEvent;
 import com.mican.myapplication.util.GsonUtils;
 import com.mican.myapplication.util.JsonUtils;
@@ -75,9 +76,9 @@ public class MyNotificationService extends NotificationListenerService {
             startForeground(1,notification);
     }
     /*
-    *     notificationPkg：           com.eg.android.AlipayGphone
-    notificationTitle:          你已成功收款0.01元
-    notificationText:           立即查看今日收款金额>>
+    *  notificationPkg：           com.eg.android.AlipayGphone
+       notificationTitle:          你已成功收款0.01元
+       notificationText:           立即查看今日收款金额>>
     *
     * */
 
@@ -85,13 +86,13 @@ public class MyNotificationService extends NotificationListenerService {
     public void onNotificationPosted(StatusBarNotification sbn) {
         //        super.onNotificationPosted(sbn);
         try {
-             LogUtils.e(GsonUtils.toJson(sbn));
+             if(sbn!=null) LogUtils.e(sbn.toString());
             //有些通知不能解析出TEXT内容，这里做个信息能判断
             StringBuilder stringBuffer=new StringBuilder();
             if (sbn.getNotification() != null) {
                 nMessage = sbn.getNotification().tickerText;
                 stringBuffer.append("nMessage"+nMessage);
-                stringBuffer.append("toString"+sbn.getNotification().toString());
+                stringBuffer.append("\n Str：  "+sbn.getNotification().toString());
                 Bundle extras = sbn.getNotification().extras;
                 // 获取接收消息APP的包名
                 String notificationPkg = sbn.getPackageName();
@@ -102,18 +103,20 @@ public class MyNotificationService extends NotificationListenerService {
                 stringBuffer.append("\nnotificationPkg：           "+notificationPkg);
                 stringBuffer.append("\nnotificationTitle:          "+notificationTitle);
                 stringBuffer.append("\nnotificationText:           "+notificationText);
-                Log.e("NotificationListener",stringBuffer.toString());
-            if("com.eg.android.AlipayGphone".equals(notificationPkg)&&
-                    "com.eg.android.AlipayGphone.DEFAULT_GROUP".equals(sbn.getNotification().getGroup())){
-                Message obtain = Message.obtain();
-                obtain.obj = nMessage;
-                obtain.what = 1;
-                getHandler().sendMessage(obtain);
+                 LogUtils.e("NotificationListener",stringBuffer.toString());
+                 Log.e("NotificationListener",getNotiInfo( sbn.getNotification()).toString());
+            if("com.eg.android.AlipayGphone".equals(notificationPkg)||"com.tencent.mm".equals(notificationPkg)){
+                NotificationResult notificationResult = new NotificationResult();
+                notificationResult.notificationPkg=notificationPkg;
+                notificationResult.notificationTitle=notificationTitle;
+                notificationResult.notificationText=notificationText;
+
               }
             }
         } catch (Exception e) {
             Log.e("NotificationListener","不可解析的通知");
-            Toast.makeText(MyNotificationService.this, "不可解析的通知", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+          //  Toast.makeText(MyNotificationService.this, "不可解析的通知", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -160,6 +163,12 @@ public class MyNotificationService extends NotificationListenerService {
     public void onListenerConnected() {
         super.onListenerConnected();
         LogUtils.e("onListenerConnected");
+    }
+
+    @Override
+    public void onListenerDisconnected() {
+        super.onListenerDisconnected();
+        LogUtils.e("onListenerDisconnected");
     }
 
     private Map<String, Object> getNotiInfo(Notification notification) {
