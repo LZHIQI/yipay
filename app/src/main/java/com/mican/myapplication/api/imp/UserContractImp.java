@@ -148,7 +148,7 @@ public class UserContractImp extends UserContract.Presenter {
 
     @Override
     public void payCall(PayCallReq queryReq,UserContract.View view) {
-        mRxManager.add(ApiService.createApi(UserApi.class).payCall(queryReq)
+        mRxManager.add(ApiService.createApi(UserApi.class).payCall(queryReq.notificationPkg,queryReq.notificationTitle,queryReq.notificationText)
                 .compose(RxHelper.rxSchedulerObservable()).subscribeWith(new ResponseDisposable<PayCallResult>(mContext,true) {
                     @Override
                     protected void onSuccess(PayCallResult  response) {

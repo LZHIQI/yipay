@@ -21,6 +21,7 @@ import com.mican.myapplication.view.custom.DialogShow
 
 public class  VersionUtils {
 
+
    companion object {
        fun checkVersion0(activity: BaseActivity<*>, isShowProgress: Boolean) {
            if (isShowProgress) {

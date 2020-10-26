@@ -10,8 +10,6 @@ package com.mican.myapplication.data;
  * @class describe
  */
 public class NotificationResult {
-   public String notificationPkg;
-    public String notificationTitle;
-    public String notificationText;
+
 
 }

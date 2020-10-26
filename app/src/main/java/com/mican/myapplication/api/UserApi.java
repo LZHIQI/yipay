@@ -19,7 +19,9 @@ import java.util.ArrayList;
 
 import io.reactivex.Observable;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 /**
  * @name lzq
@@ -85,11 +87,13 @@ public  interface UserApi {
     /**
      * 查询支付以后的回调接口
      */
-    @POST("/api/order/callBack")
-    Observable<Response<PayCallResult>> payCall(@Body PayCallReq payCallReq);
+    @GET("/api/order/callBack")
+    Observable<Response<PayCallResult>> payCall(@Query("notificationPkg") String notificationPkg,@Query("notificationTitle") String notificationTitle,@Query("notificationText") String notificationText );
 
 
 
-    @POST("/api/order/callBack")
+    @POST("/api/version/getVersion")
     Observable<Response<VersionResult>> checkVersion(@Body VersionReq versionReq);
+
+
 }

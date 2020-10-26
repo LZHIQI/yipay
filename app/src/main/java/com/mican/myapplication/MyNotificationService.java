@@ -16,11 +16,13 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.mican.myapplication.api.req.PayCallReq;
 import com.mican.myapplication.data.NotificationResult;
 import com.mican.myapplication.event.ServiceEvent;
 import com.mican.myapplication.util.GsonUtils;
 import com.mican.myapplication.util.JsonUtils;
 import com.mican.myapplication.util.LogUtils;
+import com.mican.myapplication.util.PayCallUtils;
 import com.mican.myapplication.util.ToastUtils;
 import com.mican.myapplication.util.rx.RxBus;
 
@@ -45,10 +47,8 @@ public class MyNotificationService extends NotificationListenerService {
     private static final String TAG = "MyNotificationService";
     private MyHandler handler;
     private CharSequence nMessage;
-    private String data;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        data = intent.getStringExtra("data");
         setForeground();
         return START_STICKY;
     }
@@ -77,8 +77,8 @@ public class MyNotificationService extends NotificationListenerService {
     }
     /*
     *  notificationPkg：           com.eg.android.AlipayGphone
-       notificationTitle:          你已成功收款0.01元
-       notificationText:           立即查看今日收款金额>>
+       notificationTitle:          立即查看今日收款金额>>
+       notificationText:          你已成功收款0.01元
     *
     * */
 
@@ -103,14 +103,13 @@ public class MyNotificationService extends NotificationListenerService {
                 stringBuffer.append("\nnotificationPkg：           "+notificationPkg);
                 stringBuffer.append("\nnotificationTitle:          "+notificationTitle);
                 stringBuffer.append("\nnotificationText:           "+notificationText);
-                 LogUtils.e("NotificationListener",stringBuffer.toString());
-                 Log.e("NotificationListener",getNotiInfo( sbn.getNotification()).toString());
-            if("com.eg.android.AlipayGphone".equals(notificationPkg)||"com.tencent.mm".equals(notificationPkg)){
-                NotificationResult notificationResult = new NotificationResult();
-                notificationResult.notificationPkg=notificationPkg;
-                notificationResult.notificationTitle=notificationTitle;
-                notificationResult.notificationText=notificationText;
 
+            if("com.eg.android.AlipayGphone".equals(notificationPkg)||"com.tencent.mm".equals(notificationPkg)){
+                PayCallReq paycllReq = new PayCallReq();
+                paycllReq.notificationPkg=notificationPkg;
+                paycllReq.notificationTitle=notificationTitle;
+                paycllReq.notificationText=notificationText;
+                PayCallUtils.Companion.payCall(paycllReq);
               }
             }
         } catch (Exception e) {

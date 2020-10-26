@@ -11,7 +11,8 @@ package com.mican.myapplication.api.req;
  */
 public class PayCallReq {
 
-  public String merchantId;
-  public String price;
+  public String notificationPkg;
+  public String notificationTitle;
+  public String notificationText;
 
 }
