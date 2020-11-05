@@ -25,6 +25,7 @@ import com.mican.myapplication.api.imp.UserContractImp;
 import com.mican.myapplication.api.req.QueryReq;
 import com.mican.myapplication.api.result.UserDetail;
 import com.mican.myapplication.databinding.ActivityMainBinding;
+import com.mican.myapplication.event.RefUserEvent;
 import com.mican.myapplication.event.ServiceEvent;
 import com.mican.myapplication.ui.login.LoginActivity;
 import com.mican.myapplication.util.ActivityUtils;
@@ -102,7 +103,6 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
             Intent intent= new Intent(this, LoginActivity.class);
             ActivityUtils.startActivity(getThis(), intent);
         }
-
     }
 
     private void renderVip() {
@@ -208,11 +208,18 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
         inflate.tvVipStatus.setText("会员状态：未开通会员");
         inflate.toVip.setText("立即开通");
         inflate.toVip.setOnClickListener(view -> { //立即开通
-
+          //  =xxxxxx
+            if(UserManager.Companion.isLogin()) {
+                User user = UserManager.Companion.getUser();
+                openBrowser(getThis(),"http://pc.wmipay.com/#/login?token="+user.getToken()+"&id="+user.getId());
+            }
         });
         inflate.tvUserBalance.setText(String.format("账户余额：%s元",userDetail.balance));
         inflate.tvCz.setOnClickListener(view -> { //立即充值
-
+            if(UserManager.Companion.isLogin()) {
+                User user = UserManager.Companion.getUser();
+                openBrowser(getThis(),"http://pc.wmipay.com/#/login?token="+user.getToken()+"&id="+user.getId());
+            }
         });
         inflate.appidContent.setText(userDetail.appid);
         inflate.contentAppSecret.setText(userDetail.appsecret);
@@ -245,6 +252,7 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
             ToastUtils.showShort("复制成功");
             copy(inflate.link4.getText().toString());
         });
+
 
         inflate.webLink1.setOnClickListener(view -> {
             openBrowser(getThis(),inflate.link1.getText().toString());
@@ -282,6 +290,16 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
     public  void refBaseInfo(){
         getRxBus().clear();
         startService();
+
+        rxManager.add(
+                RxBus.getInstance().toObservable(RefUserEvent.class).subscribeWith(
+               new RxResponseDisposable<RefUserEvent>(){
+                   @Override
+                   public void rxSuccess(RefUserEvent refUserEvent) {
+                       request();
+                   }
+               }
+            ));
         getRxBus().add(
                 RxBus.getInstance().toObservable(ServiceEvent.class).subscribeWith(
                         new RxResponseDisposable<ServiceEvent>() {
@@ -356,7 +374,6 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
 
     private void renderView() {
         startService();
-
         if(!isEnabled()){
             inflate.btnOpen.setVisibility(View.VISIBLE);
             inflate.openParent.setVisibility(View.GONE);

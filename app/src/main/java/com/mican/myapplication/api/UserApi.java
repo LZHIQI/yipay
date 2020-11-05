@@ -44,7 +44,7 @@ public  interface UserApi {
     /**
      * 登录
      */
-    @POST("/api/user/login")
+    @POST("/api/api/user/login")
     Observable<Response<User>> login(@Body Register register);
 
 

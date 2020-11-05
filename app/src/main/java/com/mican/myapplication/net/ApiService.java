@@ -20,8 +20,8 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiService {
-    public static final String BASE_API_URL_FORMAL = "https://admin2.utools.club/";//用户版API正式环境
-    public static final String BASE_API_URL_TEST = "https://admin2.utools.club/";//用户版API测试环境
+    public static final String BASE_API_URL_FORMAL = "http://pc.wmipay.com/api/";//用户版API正式环境
+    public static final String BASE_API_URL_TEST = "http://pc.wmipay.com/api/";//用户版API测试环境
     private static final int CONNECT_TIME = 15;
     private static final int WRITE_TIME = 20;
     private static final int READ_TIME = 20;
