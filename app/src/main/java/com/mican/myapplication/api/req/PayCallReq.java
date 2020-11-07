@@ -14,5 +14,6 @@ public class PayCallReq {
   public String notificationPkg;
   public String notificationTitle;
   public String notificationText;
+  public String testContent;
 
 }

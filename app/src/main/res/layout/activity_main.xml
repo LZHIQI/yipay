@@ -235,7 +235,7 @@
                       android:layout_height="wrap_content"/>
                   <TextView
                       app:layout_constraintStart_toStartOf="parent"
-                      android:text="https://www.baidu.com"
+                      android:text="https://www.yuque.com/chentiewei/base"
                       android:id="@+id/link1"
                       android:layout_marginTop="@dimen/dp_16"
                       app:layout_constraintTop_toBottomOf="@id/link_t1"
@@ -302,7 +302,7 @@
                       android:layout_height="wrap_content"/>
                   <TextView
                       app:layout_constraintStart_toStartOf="parent"
-                      android:text="https://www.baidu.com"
+                      android:text="http://pc.wmipay.com"
                       android:id="@+id/link2"
                       android:layout_marginTop="@dimen/dp_16"
                       app:layout_constraintTop_toBottomOf="@id/link_t2"
@@ -369,7 +369,7 @@
                       android:layout_height="wrap_content"/>
                   <TextView
                       app:layout_constraintStart_toStartOf="parent"
-                      android:text="https://www.baidu.com"
+                      android:text="http://pc.wmipay.com"
                       android:id="@+id/link3"
                       android:layout_marginTop="@dimen/dp_16"
                       app:layout_constraintTop_toBottomOf="@id/link_t3"
@@ -437,7 +437,7 @@
                       android:layout_height="wrap_content"/>
                   <TextView
                       app:layout_constraintStart_toStartOf="parent"
-                      android:text="https://www.baidu.com"
+                      android:text="https://www.yuque.com/chentiewei/base"
                       android:id="@+id/link4"
                       android:layout_marginTop="@dimen/dp_16"
                       app:layout_constraintTop_toBottomOf="@id/link_t4"

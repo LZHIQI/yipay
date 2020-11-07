@@ -1,13 +1,10 @@
 package com.mican.myapplication.util
 
-import android.content.Context
-import com.mican.myapplication.BaseActivity
 import com.mican.myapplication.api.UserContract
 import com.mican.myapplication.api.imp.UserContractImp
 import com.mican.myapplication.api.req.PayCallReq
-import com.mican.myapplication.api.result.PayCallResult
-import com.mican.myapplication.api.result.VersionResult
-import com.mican.myapplication.view.custom.DialogShow
+import com.mican.myapplication.event.RefUserEvent
+import com.mican.myapplication.util.rx.RxBus
 
 /**
  * @name lzq
@@ -21,19 +18,19 @@ import com.mican.myapplication.view.custom.DialogShow
 
 public class  PayCallUtils {
 
-
     companion object {
         fun payCall(payCallReq: PayCallReq) {
             val contractImp= UserContractImp()
             contractImp.attachView(null,null)
-            contractImp.payCall( payCallReq,object : UserContract.View {
+            contractImp.payCall(payCallReq,object : UserContract.View {
                 override fun getError(message: String?) {
+                    ToastUtils.showLong("请求失败："+GsonUtils.toJson(payCallReq))
+                    ToastUtils.showLong(message)
                 }
-
                 override fun getSuccess(o: Any?) {
-                    if(o is PayCallResult){
-
-                    }
+                    val s = "请求成功：" + "PayCallReq:\n" + GsonUtils.toJson(payCallReq) +"\nresult:\n"+ GsonUtils.toJson(o)
+                    ToastUtils.showLong(s)
+                    RxBus.getInstance().post(RefUserEvent())
                 }
             })
         }

@@ -24,6 +24,7 @@ import com.mican.myapplication.util.JsonUtils;
 import com.mican.myapplication.util.LogUtils;
 import com.mican.myapplication.util.PayCallUtils;
 import com.mican.myapplication.util.ToastUtils;
+import com.mican.myapplication.util.Utils;
 import com.mican.myapplication.util.rx.RxBus;
 
 import java.lang.reflect.Field;
@@ -50,6 +51,7 @@ public class MyNotificationService extends NotificationListenerService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         setForeground();
+        getHandler();
         return START_STICKY;
     }
 
@@ -61,19 +63,25 @@ public class MyNotificationService extends NotificationListenerService {
     }
 
     private void setForeground() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(Utils.getApp(),"yipay");
+        builder.setContentTitle("易支付");
+        builder.setAutoCancel(false);
+        builder.setSmallIcon(R.mipmap.ic_launcher);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("yipay",
-                    "yipay", NotificationManager.IMPORTANCE_DEFAULT);
+                    "微妙付",NotificationManager.IMPORTANCE_HIGH);
             NotificationManager service = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             service.createNotificationChannel(channel);
-         }
-        Notification notification =new NotificationCompat.Builder(this,"yipay")
-                    .setContentTitle("易支付")
-                    .setContentText("")
-                    .setAutoCancel(false)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .build();
-            startForeground(1,notification);
+            //LED灯
+            channel.enableLights(false);
+            //震动
+            channel.enableVibration(false);
+            if (service != null) {
+                service.createNotificationChannel(channel);
+            }
+            builder.setChannelId(channel.getId());
+        }
+       startForeground(1, builder.build());
     }
     /*
     *  notificationPkg：           com.eg.android.AlipayGphone
@@ -103,19 +111,30 @@ public class MyNotificationService extends NotificationListenerService {
                 stringBuffer.append("\nnotificationPkg：           "+notificationPkg);
                 stringBuffer.append("\nnotificationTitle:          "+notificationTitle);
                 stringBuffer.append("\nnotificationText:           "+notificationText);
-
             if("com.eg.android.AlipayGphone".equals(notificationPkg)||"com.tencent.mm".equals(notificationPkg)){
                 PayCallReq paycllReq = new PayCallReq();
                 paycllReq.notificationPkg=notificationPkg;
                 paycllReq.notificationTitle=notificationTitle;
                 paycllReq.notificationText=notificationText;
+                paycllReq.testContent=sbn.getNotification().toString();
                 PayCallUtils.Companion.payCall(paycllReq);
-              }
+              }else {
+                PayCallReq paycllReq = new PayCallReq();
+                paycllReq.notificationPkg=notificationPkg;
+                paycllReq.notificationTitle="非支付app通知";
+                paycllReq.testContent=sbn.getNotification().toString();
+                Message message=Message.obtain();
+                message.what =0;
+                message.obj = paycllReq;
+                getHandler().sendMessage(message);
+             }
             }
         } catch (Exception e) {
             Log.e("NotificationListener","不可解析的通知");
             e.printStackTrace();
-          //  Toast.makeText(MyNotificationService.this, "不可解析的通知", Toast.LENGTH_SHORT).show();
+            Message message=Message.obtain();
+            message.what =2;
+            getHandler().sendMessage(message);
         }
 
     }
@@ -146,7 +165,16 @@ public class MyNotificationService extends NotificationListenerService {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    ToastUtils.showShort(msg.obj.toString());
+                    ToastUtils.showLong(GsonUtils.toJson(msg.obj));
+                    break;
+                case 0:
+                    if(msg.obj!=null){
+                        ToastUtils.showShort(GsonUtils.toJson(msg.obj));
+                    }
+                    break;
+                case 2:
+                    ToastUtils.showLong("通知解析报错");
+                    break;
             }
         }
 

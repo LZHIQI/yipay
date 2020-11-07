@@ -37,35 +37,35 @@ public  interface UserApi {
     /**
      * 注册
      */
-    @POST("/api/user/register")
+    @POST("api/user/register")
     Observable<Response<Void>> register(@Body Register register);
 
 
     /**
      * 登录
      */
-    @POST("/api/api/user/login")
+    @POST("api/user/login")
     Observable<Response<User>> login(@Body Register register);
 
 
     /**
      * 详细
      */
-    @POST("/api/user/details")
+    @POST("api/user/details")
     Observable<Response<UserDetail>> detail(@Body QueryReq queryReq);
 
 
     /**
      * 详细
      */
-    @POST("/api/meal/list")
+    @POST("api/meal/list")
     Observable<Response<ArrayList<TcResult>>> tcList( );
 
 
     /**
      * 查询订单
      */
-    @POST("/api/order/create")
+    @POST("api/order/create")
     Observable<Response<QueryOrder>> queryOrder(@Body QueryReq queryReq);
 
 
@@ -73,26 +73,26 @@ public  interface UserApi {
     /**
      * 查询订单状态
      */
-    @POST("/api/order/checkOrder")
+    @POST("api/order/checkOrder")
     Observable<Response<QueryStatus>> queryStatus(@Body QueryReq queryReq);
 
 
     /**
      * 查询商家状态
      */
-    @POST("/api/order/getState")
+    @POST("api/order/getState")
     Observable<Response<MerchantStatus>> merchantStatus(@Body QueryReq queryReq);
 
 
     /**
      * 查询支付以后的回调接口
      */
-    @GET("/api/order/callBack")
+    @POST("api/order/callBack")
     Observable<Response<PayCallResult>> payCall(@Query("notificationPkg") String notificationPkg,@Query("notificationTitle") String notificationTitle,@Query("notificationText") String notificationText );
 
 
 
-    @POST("/api/version/getVersion")
+    @POST("api/version/getVersion")
     Observable<Response<VersionResult>> checkVersion(@Body VersionReq versionReq);
 
 

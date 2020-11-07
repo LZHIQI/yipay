@@ -16,6 +16,7 @@ import io.reactivex.disposables.Disposable;
 
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -208,17 +209,16 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
         inflate.tvVipStatus.setText("会员状态：未开通会员");
         inflate.toVip.setText("立即开通");
         inflate.toVip.setOnClickListener(view -> { //立即开通
-          //  =xxxxxx
             if(UserManager.Companion.isLogin()) {
                 User user = UserManager.Companion.getUser();
-                openBrowser(getThis(),"http://pc.wmipay.com/#/login?token="+user.getToken()+"&id="+user.getId());
+                openBrowser(getThis(),"http://pc.wmipay.com/#/merchantManage?token="+user.getToken());
             }
         });
         inflate.tvUserBalance.setText(String.format("账户余额：%s元",userDetail.balance));
         inflate.tvCz.setOnClickListener(view -> { //立即充值
             if(UserManager.Companion.isLogin()) {
                 User user = UserManager.Companion.getUser();
-                openBrowser(getThis(),"http://pc.wmipay.com/#/login?token="+user.getToken()+"&id="+user.getId());
+                openBrowser(getThis(),"http://pc.wmipay.com/#/merchantManage?token="+user.getToken());
             }
         });
         inflate.appidContent.setText(userDetail.appid);
@@ -246,7 +246,12 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
         });
         inflate.link3Copy.setOnClickListener(view -> {
             ToastUtils.showShort("复制成功");
-            copy(inflate.link3.getText().toString());
+            User user = UserManager.Companion.getUser();
+            if(user!=null){
+                copy(inflate.link3.getText().toString()+"?token="+user.getToken());
+            }else {
+                copy(inflate.link3.getText().toString());
+            }
         });
         inflate.link4Copy.setOnClickListener(view -> {
             ToastUtils.showShort("复制成功");
@@ -281,7 +286,6 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
             final ComponentName componentName = intent.resolveActivity(context.getPackageManager());
             //  LogUtil.d("suyan = " + componentName.getClassName());
             context.startActivity(Intent.createChooser(intent, "请选择浏览器"));
-            finish();
         } else {
             // GlobalMethod.showToast(context, "链接错误或无浏览器");
         }
@@ -521,6 +525,22 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
      */
     public  boolean isServiceRunning() {
        return ServiceUtils.isServiceRunning(MyNotificationService.class);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            goBackGround();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void goBackGround() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK) ;
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
     }
 
 
