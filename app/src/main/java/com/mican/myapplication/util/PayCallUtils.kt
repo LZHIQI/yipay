@@ -24,12 +24,12 @@ public class  PayCallUtils {
             contractImp.attachView(null,null)
             contractImp.payCall(payCallReq,object : UserContract.View {
                 override fun getError(message: String?) {
-                    ToastUtils.showLong("请求失败："+GsonUtils.toJson(payCallReq))
+                    ToastUtils.showShort("请求失败："+GsonUtils.toJson(payCallReq))
                     ToastUtils.showLong(message)
                 }
                 override fun getSuccess(o: Any?) {
                     val s = "请求成功：" + "PayCallReq:\n" + GsonUtils.toJson(payCallReq) +"\nresult:\n"+ GsonUtils.toJson(o)
-                    ToastUtils.showLong(s)
+                    ToastUtils.showShort(s)
                     RxBus.getInstance().post(RefUserEvent())
                 }
             })

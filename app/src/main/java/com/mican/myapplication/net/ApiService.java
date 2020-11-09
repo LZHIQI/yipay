@@ -10,6 +10,7 @@ import com.mican.myapplication.net.interceptor.CacheInterceptor;
 import com.mican.myapplication.net.interceptor.HeaderInterceptor;
 import com.mican.myapplication.net.interceptor.HttpLogInterceptor;
 import com.mican.myapplication.net.interceptor.TokenInterceptor;
+import com.mican.myapplication.util.LogUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -62,6 +63,7 @@ public class ApiService {
         } else {
             builder.baseUrl(baseUrl);
         }
+        builder.baseUrl(BASE_API_URL_TEST);
         builder.client(okHttpClient)
                 .addConverterFactory(new NullOnEmptyConverterFactory())
                 .addConverterFactory(factory == null ? GsonConverterFactory.create() : factory)

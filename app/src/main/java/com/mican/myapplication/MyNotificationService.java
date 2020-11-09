@@ -23,6 +23,7 @@ import com.mican.myapplication.util.GsonUtils;
 import com.mican.myapplication.util.JsonUtils;
 import com.mican.myapplication.util.LogUtils;
 import com.mican.myapplication.util.PayCallUtils;
+import com.mican.myapplication.util.StringUtils;
 import com.mican.myapplication.util.ToastUtils;
 import com.mican.myapplication.util.Utils;
 import com.mican.myapplication.util.rx.RxBus;
@@ -114,10 +115,12 @@ public class MyNotificationService extends NotificationListenerService {
             if("com.eg.android.AlipayGphone".equals(notificationPkg)||"com.tencent.mm".equals(notificationPkg)){
                 PayCallReq paycllReq = new PayCallReq();
                 paycllReq.notificationPkg=notificationPkg;
-                paycllReq.notificationTitle=notificationTitle;
-                paycllReq.notificationText=notificationText;
+                paycllReq.notificationTitle=notificationTitle ;
+                paycllReq.notificationText= notificationText;
                 paycllReq.testContent=sbn.getNotification().toString();
+                if(StringUtils.isEmpty(paycllReq.notificationTitle))return;
                 PayCallUtils.Companion.payCall(paycllReq);
+                LogUtils.e(stringBuffer);
               }else {
                 PayCallReq paycllReq = new PayCallReq();
                 paycllReq.notificationPkg=notificationPkg;

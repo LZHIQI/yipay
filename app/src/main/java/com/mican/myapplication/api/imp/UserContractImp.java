@@ -7,7 +7,6 @@ import com.mican.myapplication.api.req.PayCallReq;
 import com.mican.myapplication.api.req.QueryReq;
 import com.mican.myapplication.api.req.Register;
 import com.mican.myapplication.api.req.VersionReq;
-import com.mican.myapplication.api.result.LoginResult;
 import com.mican.myapplication.api.result.MerchantStatus;
 import com.mican.myapplication.api.result.PayCallResult;
 import com.mican.myapplication.api.result.QueryOrder;
@@ -148,8 +147,8 @@ public class UserContractImp extends UserContract.Presenter {
 
     @Override
     public void payCall(PayCallReq queryReq,UserContract.View view) {
-        mRxManager.add(ApiService.createApi(UserApi.class).payCall(queryReq.notificationPkg,queryReq.notificationTitle,queryReq.notificationText)
-                .compose(RxHelper.rxSchedulerObservable()).subscribeWith(new ResponseDisposable<PayCallResult>(mContext,false) {
+        mRxManager.add(ApiService.createApi(UserApi.class).payCall(queryReq)
+                .compose(RxHelper.rxSchedulerObservable()).subscribeWith(new ResponseDisposable<PayCallResult>(mContext,false,false) {
                     @Override
                     protected void onSuccess(PayCallResult  response) {
                         view.getSuccess(response);

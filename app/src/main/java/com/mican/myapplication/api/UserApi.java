@@ -88,7 +88,7 @@ public  interface UserApi {
      * 查询支付以后的回调接口
      */
     @POST("api/order/callBack")
-    Observable<Response<PayCallResult>> payCall(@Query("notificationPkg") String notificationPkg,@Query("notificationTitle") String notificationTitle,@Query("notificationText") String notificationText );
+    Observable<Response<PayCallResult>> payCall( @Body PayCallReq queryReq);
 
 
 
