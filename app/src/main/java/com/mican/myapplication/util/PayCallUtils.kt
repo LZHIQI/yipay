@@ -1,5 +1,6 @@
 package com.mican.myapplication.util
 
+import com.mican.myapplication.UserManager
 import com.mican.myapplication.api.UserContract
 import com.mican.myapplication.api.imp.UserContractImp
 import com.mican.myapplication.api.req.PayCallReq
@@ -20,22 +21,22 @@ public class  PayCallUtils {
 
     companion object {
         fun payCall(payCallReq: PayCallReq) {
-            val contractImp= UserContractImp()
-            contractImp.attachView(null,null)
-            contractImp.payCall(payCallReq,object : UserContract.View {
-                override fun getError(message: String?) {
-                    ToastUtils.showShort("请求失败："+GsonUtils.toJson(payCallReq))
-                    ToastUtils.showLong(message)
-                }
-                override fun getSuccess(o: Any?) {
-                    val s = "请求成功：" + "PayCallReq:\n" + GsonUtils.toJson(payCallReq) +"\nresult:\n"+ GsonUtils.toJson(o)
-                    ToastUtils.showShort(s)
-                    RxBus.getInstance().post(RefUserEvent())
-                }
-            })
+            if(UserManager.isLogin()){
+                val contractImp= UserContractImp()
+                contractImp.attachView(null,null)
+                contractImp.payCall(payCallReq,object : UserContract.View {
+                    override fun getError(message: String?) {
+                        ToastUtils.showShort("请求失败："+GsonUtils.toJson(payCallReq))
+                        ToastUtils.showLong(message)
+                    }
+                    override fun getSuccess(o: Any?) {
+                        val s = "请求成功：" + "PayCallReq:\n" + GsonUtils.toJson(payCallReq) +"\nresult:\n"+ GsonUtils.toJson(o)
+                        ToastUtils.showShort(s)
+                        RxBus.getInstance().post(RefUserEvent())
+                    }
+                })
+            }
         }
-
-
     }
 
 }

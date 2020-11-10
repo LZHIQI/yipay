@@ -75,7 +75,6 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
                     mPresenter.detail(queryReq, new UserContract.View() {
                         @Override
                         public void getError(String message) {
-                            ToastUtils.showShort(message);
                             goneView();
                             if(subscribe!=null){
                                 getRxBus().unbind(subscribe);
@@ -385,7 +384,6 @@ public class MainActivity extends BaseActivity<UserContractImp> implements UserC
             customDialog  = DialogShow.showDefDialog(getThis(), new CustomCallBack() {
                         @Override
                         public void right() {
-                            LogUtils.e("right");
                             toOpen();
                         }
 

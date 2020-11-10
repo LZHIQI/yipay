@@ -18,7 +18,6 @@ package com.mican.myapplication;
 
 
 
-import android.app.Activity;
 
 import com.mican.myapplication.util.RxManager;
 

@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.mican.myapplication">
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
     <application
         android:name=".YPApplication"
@@ -29,7 +30,6 @@
             android:theme="@style/AppTheme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

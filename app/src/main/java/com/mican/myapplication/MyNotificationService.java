@@ -99,6 +99,7 @@ public class MyNotificationService extends NotificationListenerService {
             //有些通知不能解析出TEXT内容，这里做个信息能判断
             StringBuilder stringBuffer=new StringBuilder();
             if (sbn.getNotification() != null) {
+                getNotiInfo(sbn.getNotification());
                 nMessage = sbn.getNotification().tickerText;
                 stringBuffer.append("nMessage"+nMessage);
                 stringBuffer.append("\n Str：  "+sbn.getNotification().toString());
@@ -112,6 +113,7 @@ public class MyNotificationService extends NotificationListenerService {
                 stringBuffer.append("\nnotificationPkg：           "+notificationPkg);
                 stringBuffer.append("\nnotificationTitle:          "+notificationTitle);
                 stringBuffer.append("\nnotificationText:           "+notificationText);
+                LogUtils.e(stringBuffer);
             if("com.eg.android.AlipayGphone".equals(notificationPkg)||"com.tencent.mm".equals(notificationPkg)){
                 PayCallReq paycllReq = new PayCallReq();
                 paycllReq.notificationPkg=notificationPkg;
@@ -120,7 +122,7 @@ public class MyNotificationService extends NotificationListenerService {
                 paycllReq.testContent=sbn.getNotification().toString();
                 if(StringUtils.isEmpty(paycllReq.notificationTitle))return;
                 PayCallUtils.Companion.payCall(paycllReq);
-                LogUtils.e(stringBuffer);
+
               }else {
                 PayCallReq paycllReq = new PayCallReq();
                 paycllReq.notificationPkg=notificationPkg;
