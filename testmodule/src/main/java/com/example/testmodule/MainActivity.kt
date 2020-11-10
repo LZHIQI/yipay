@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
                     "温馨提示",
                     "开启",
                     false,
-                    false)
+                    true)
         } else {
             notificationDialog?.dismiss()
             if (!isServiceRunning()) {
